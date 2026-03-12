@@ -5,9 +5,11 @@ Database: MongoDB
 ## Collections
 
 ### 1. Students
+
 Stores student details.
 
 Fields:
+
 - name
 - usn
 - email
@@ -18,9 +20,11 @@ Fields:
 ---
 
 ### 2. Faculty
+
 Stores faculty information.
 
 Fields:
+
 - name
 - department
 - designation
@@ -30,9 +34,11 @@ Fields:
 ---
 
 ### 3. LORRequests
+
 Stores LOR request details.
 
 Fields:
+
 - studentId
 - faculty1
 - faculty2
@@ -43,9 +49,11 @@ Fields:
 ---
 
 ### 4. Applications
+
 Tracks higher studies applications.
 
 Fields:
+
 - studentId
 - university
 - program
