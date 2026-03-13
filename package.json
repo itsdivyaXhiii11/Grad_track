@@ -1,0 +1,25 @@
+{
+  "name": "grad_track",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsdivyaXhiii11/Grad_track.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/itsdivyaXhiii11/Grad_track/issues"
+  },
+  "homepage": "https://github.com/itsdivyaXhiii11/Grad_track#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "mongoose": "^9.3.0"
+  }
+}
