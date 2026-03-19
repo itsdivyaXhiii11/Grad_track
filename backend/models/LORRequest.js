@@ -29,7 +29,12 @@ const lorRequestSchema = new mongoose.Schema({
     type: String,
     enum: ["Pending", "Approved", "Rejected"],
     default: "Pending"
-  }
+  },
+
+  facultyId: {
+  type: mongoose.Schema.Types.ObjectId,
+  required: true
+  },
 
 }, { timestamps: true });
 

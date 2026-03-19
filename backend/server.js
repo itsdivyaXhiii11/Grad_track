@@ -1,25 +1,33 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+const connectDB = require("./db");
+const lorRoutes = require("./routes/lorRoutes");
 
-dotenv.config();
+dotenv.config({ path: "../.env" });
+const PORT = process.env.PORT || 3001;
 
 const app = express();
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Server failed to start:", error);
+  }
+};
+
+startServer();
 
 app.use(express.json());
 app.use(cors());
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log("MongoDB Connected");
-})
-.catch((err) => {
-  console.log(err);
-});
+app.use("/api", lorRoutes);
 
-// test route
 app.get("/", (req, res) => {
   res.send("GradTrack Backend Running 🚀");
 });
@@ -27,8 +35,5 @@ app.get("/", (req, res) => {
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
-const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
