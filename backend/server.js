@@ -3,11 +3,13 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./db");
 const lorRoutes = require("./routes/lorRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 
 dotenv.config({ path: "../.env" });
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+
 const startServer = async () => {
   try {
     await connectDB();
@@ -27,6 +29,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api", lorRoutes);
+app.use("/api", studentRoutes);
 
 app.get("/", (req, res) => {
   res.send("GradTrack Backend Running 🚀");
