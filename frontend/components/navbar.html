@@ -1,0 +1,38 @@
+<!-- components/navbar.html -->
+<!-- Injected into .topbar-placeholder on each page via JS -->
+<div class="topbar" id="topbar">
+  <!-- Mobile menu toggle -->
+  <button class="btn-icon d-lg-none me-2" id="sidebarToggle" onclick="toggleSidebar()">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <!-- Page title — updated dynamically by each page's JS -->
+  <div class="topbar-title" id="topbarTitle">Portal</div>
+
+  <div class="topbar-actions">
+    <!-- Notification bell -->
+    <button class="btn-icon position-relative" title="Notifications">
+      <i class="bi bi-bell"></i>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size:.55rem;padding:3px 5px;">3</span>
+    </button>
+
+    <!-- Profile dropdown -->
+    <div class="dropdown">
+      <button class="avatar-btn" data-bs-toggle="dropdown" id="navAvatarBtn" title="Profile">
+        A
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width:200px; border-radius:12px;">
+        <li>
+          <div class="px-3 py-2 border-bottom">
+            <div class="fw-700 font-display" id="navUserName" style="font-size:.9rem;">User</div>
+            <div style="font-size:.75rem;color:var(--text-muted);" id="navUserRole">Role</div>
+          </div>
+        </li>
+        <li><a class="dropdown-item" href="../pages/profile.html"><i class="bi bi-person me-2"></i>My Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item text-danger" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+      </ul>
+    </div>
+  </div>
+</div>

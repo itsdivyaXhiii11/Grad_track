@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My LOR Requests — LOR Portal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<div class="app-wrapper">
+  <div id="sidebar-placeholder"></div>
+
+  <div class="main-content">
+    <div id="navbar-placeholder"></div>
+
+    <div class="page-body">
+      <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+          <h1>LOR Requests</h1>
+          <p>Track the status of all your recommendation letter requests.</p>
+        </div>
+        <a href="lor-request.html" class="btn btn-primary">
+          <i class="bi bi-plus me-1"></i>New Request
+        </a>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="card mb-4">
+        <div class="card-body py-3">
+          <div class="row g-2 align-items-end">
+            <div class="col-sm-4">
+              <label class="form-label">Filter by Status</label>
+              <select class="form-select form-select-sm" id="filterStatus">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="sent">Sent</option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label">Search</label>
+              <input type="text" class="form-control form-control-sm" id="searchInput"
+                     placeholder="Search by faculty, purpose…" />
+            </div>
+            <div class="col-sm-4">
+              <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetFilters()">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Table -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <h2>All Requests</h2>
+          <span class="badge bg-secondary rounded-pill" id="requestCount">0</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#ID</th>
+                <th>Faculty</th>
+                <th>Purpose</th>
+                <th>Abroad</th>
+                <th>University</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="requestsBody">
+              <tr><td colspan="8" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm me-2"></div>Loading…
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div id="footer-placeholder"></div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Request Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="detailModalBody">
+        <!-- filled by JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" id="modalDownloadBtn" onclick="downloadFromModal()">
+          <i class="bi bi-download me-1"></i>Download LOR
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/student-dashboard.js"></script>
+<script src="../js/lor-requests-list.js"></script>
+</body>
+</html>
