@@ -1,41 +1,44 @@
 const mongoose = require("mongoose");
 
-const lorRequestSchema = new mongoose.Schema({
+const lorSchema = new mongoose.Schema(
+  {
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
-  studentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Student"
+    faculty: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    purpose: {
+      type: String,
+      required: true,
+    },
+
+    university: {
+      type: String,
+      required: true,
+    },
+
+    description: {
+      type: String,
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+
+    documentUrl: {
+      type: String,
+    },
   },
+  { timestamps: true }
+);
 
-  faculty1: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Faculty"
-  },
-
-  faculty2: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Faculty"
-  },
-
-  university: {
-    type: String
-  },
-
-  course: {
-    type: String
-  },
-
-  status: {
-    type: String,
-    enum: ["Pending", "Approved", "Rejected"],
-    default: "Pending"
-  },
-
-  facultyId: {
-  type: mongoose.Schema.Types.ObjectId,
-  required: true
-  },
-
-}, { timestamps: true });
-
-module.exports = mongoose.model("LORRequest", lorRequestSchema);
+module.exports = mongoose.model("LOR", lorSchema);
