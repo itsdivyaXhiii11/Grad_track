@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Higher Studies — LOR Portal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .uni-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 20px;
+      transition: box-shadow var(--transition), transform var(--transition);
+      height: 100%;
+    }
+    .uni-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .uni-flag {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 12px;
+    }
+    .uni-card h3 { font-size: .95rem; font-weight: 700; margin: 0 0 4px; }
+    .uni-card .uni-country { font-size: .78rem; color: var(--text-muted); margin-bottom: 10px; }
+    .uni-card .uni-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .uni-tag {
+      background: var(--primary-light); color: var(--primary);
+      font-size: .7rem; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+    }
+    .tip-card {
+      border-left: 3px solid var(--primary);
+      background: var(--primary-light);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .tip-card .tip-title { font-weight: 700; font-size: .85rem; color: var(--primary); }
+    .tip-card p { font-size: .82rem; margin: 2px 0 0; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <div id="sidebar-placeholder"></div>
+
+  <div class="main-content">
+    <div id="navbar-placeholder"></div>
+
+    <div class="page-body">
+      <div class="page-header">
+        <h1>Higher Studies Guide</h1>
+        <p>Explore universities, programs, and tips for your post-graduation journey.</p>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="card mb-4">
+        <div class="card-body py-3">
+          <div class="row g-2 align-items-end">
+            <div class="col-sm-5">
+              <label class="form-label">Search Universities</label>
+              <input type="text" class="form-control form-control-sm" id="uniSearch"
+                     placeholder="e.g. MIT, Germany, Computer Science…" />
+            </div>
+            <div class="col-sm-3">
+              <label class="form-label">Country</label>
+              <select class="form-select form-select-sm" id="countryFilter">
+                <option value="">All Countries</option>
+                <option value="USA">USA</option>
+                <option value="Germany">Germany</option>
+                <option value="Canada">Canada</option>
+                <option value="UK">United Kingdom</option>
+                <option value="Australia">Australia</option>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label class="form-label">Field</label>
+              <select class="form-select form-select-sm" id="fieldFilter">
+                <option value="">All Fields</option>
+                <option value="CS">Computer Science</option>
+                <option value="EE">Electrical Engineering</option>
+                <option value="MBA">Business / MBA</option>
+                <option value="Data">Data Science / AI</option>
+              </select>
+            </div>
+            <div class="col-sm-1">
+              <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetUniFilters()">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- University Cards -->
+      <h2 style="font-size:1rem;font-weight:700;margin-bottom:14px;">
+        Popular Universities <span class="text-muted fw-400" id="uniCountLabel" style="font-size:.85rem;font-family:var(--font-body);"></span>
+      </h2>
+      <div class="row g-3 mb-5" id="uniGrid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Tips Section -->
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header"><i class="bi bi-lightbulb me-2 text-primary-color"></i>Application Tips</div>
+            <div class="card-body">
+              <div class="tip-card">
+                <div class="tip-title">Start Early</div>
+                <p>Most universities have deadlines in Dec–Jan. Begin your applications at least 6 months ahead.</p>
+              </div>
+              <div class="tip-card">
+                <div class="tip-title">Get Multiple LORs</div>
+                <p>Aim for 2–3 recommendation letters from professors who know your academic work well.</p>
+              </div>
+              <div class="tip-card">
+                <div class="tip-title">Statement of Purpose</div>
+                <p>Write a clear, specific SOP that connects your experience to the program you're applying to.</p>
+              </div>
+              <div class="tip-card">
+                <div class="tip-title">Standardized Tests</div>
+                <p>GRE/GMAT for USA, IELTS/TOEFL for English proficiency. Check each university's requirements.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header"><i class="bi bi-calendar3 me-2 text-primary-color"></i>Key Deadlines Calendar</div>
+            <div class="card-body">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Period</th>
+                    <th>Task</th>
+                    <th>Priority</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Aug–Sep</td>
+                    <td>GRE/TOEFL preparation & tests</td>
+                    <td><span class="badge-status badge-rejected">High</span></td>
+                  </tr>
+                  <tr>
+                    <td>Sep–Oct</td>
+                    <td>Shortlist universities & programs</td>
+                    <td><span class="badge-status badge-rejected">High</span></td>
+                  </tr>
+                  <tr>
+                    <td>Oct</td>
+                    <td>Request LORs from professors</td>
+                    <td><span class="badge-status badge-rejected">High</span></td>
+                  </tr>
+                  <tr>
+                    <td>Oct–Nov</td>
+                    <td>Draft Statement of Purpose</td>
+                    <td><span class="badge-status badge-pending">Medium</span></td>
+                  </tr>
+                  <tr>
+                    <td>Nov–Dec</td>
+                    <td>Submit applications</td>
+                    <td><span class="badge-status badge-rejected">High</span></td>
+                  </tr>
+                  <tr>
+                    <td>Jan–Feb</td>
+                    <td>Apply for scholarships &amp; funding</td>
+                    <td><span class="badge-status badge-pending">Medium</span></td>
+                  </tr>
+                  <tr>
+                    <td>Mar–Apr</td>
+                    <td>Visa application &amp; accommodation</td>
+                    <td><span class="badge-status badge-approved">Plan</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div id="footer-placeholder"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/student-dashboard.js"></script>
+<script>
+// Higher Studies page — inline script
+const UNIVERSITIES = [
+  { name: 'Massachusetts Institute of Technology', country: 'USA',       flag: '🇺🇸', fields: ['CS','EE','Data'], rank: '#1 QS',       deadline: 'Dec 15' },
+  { name: 'Stanford University',                   country: 'USA',       flag: '🇺🇸', fields: ['CS','Data','EE'], rank: '#3 QS',       deadline: 'Dec 1'  },
+  { name: 'TU Munich (TUM)',                        country: 'Germany',   flag: '🇩🇪', fields: ['CS','EE'],        rank: '#37 QS',      deadline: 'Jan 15' },
+  { name: 'University of Toronto',                  country: 'Canada',    flag: '🇨🇦', fields: ['CS','MBA'],       rank: '#21 QS',      deadline: 'Jan 10' },
+  { name: 'University of Edinburgh',                country: 'UK',        flag: '🇬🇧', fields: ['CS','Data'],      rank: '#22 QS',      deadline: 'Jan 31' },
+  { name: 'ETH Zurich',                             country: 'Switzerland',flag: '🇨🇭', fields: ['CS','EE'],       rank: '#7 QS',       deadline: 'Dec 15' },
+  { name: 'University of Melbourne',                country: 'Australia', flag: '🇦🇺', fields: ['CS','MBA'],       rank: '#14 QS',      deadline: 'Oct 31' },
+  { name: 'RWTH Aachen University',                 country: 'Germany',   flag: '🇩🇪', fields: ['EE','CS'],        rank: '#106 QS',     deadline: 'Jan 31' },
+  { name: 'Carnegie Mellon University',             country: 'USA',       flag: '🇺🇸', fields: ['CS','Data'],      rank: '#52 QS',      deadline: 'Dec 15' },
+  { name: 'IIT Bombay (MTech)',                     country: 'India',     flag: '🇮🇳', fields: ['CS','EE'],        rank: '#118 QS',     deadline: 'Mar 31' },
+  { name: 'NUS Singapore',                          country: 'Singapore', flag: '🇸🇬', fields: ['CS','MBA','Data'],'rank':'#8 QS',      deadline: 'Dec 30' },
+  { name: 'University of British Columbia',         country: 'Canada',    flag: '🇨🇦', fields: ['CS','EE','Data'], rank: '#34 QS',      deadline: 'Jan 15' },
+];
+
+let filteredUnis = [...UNIVERSITIES];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = requireAuth();
+  if (!user) return;
+  await injectComponents('Higher Studies');
+  renderUnis(UNIVERSITIES);
+  setupUniFilters();
+});
+
+function renderUnis(list) {
+  const grid  = document.getElementById('uniGrid');
+  const label = document.getElementById('uniCountLabel');
+  label.textContent = `(${list.length} results)`;
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="col-12 text-center text-muted py-4">No universities match your filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(u => `
+    <div class="col-sm-6 col-lg-4">
+      <div class="uni-card">
+        <div class="uni-flag">${u.flag}</div>
+        <h3>${u.name}</h3>
+        <div class="uni-country">
+          <i class="bi bi-geo-alt me-1"></i>${u.country}
+          &nbsp;·&nbsp; <i class="bi bi-trophy me-1"></i>${u.rank}
+          &nbsp;·&nbsp; <i class="bi bi-calendar me-1"></i>Deadline: ${u.deadline}
+        </div>
+        <div class="uni-tags">
+          ${u.fields.map(f => `<span class="uni-tag">${f}</span>`).join('')}
+        </div>
+        <a href="lor-request.html" class="btn btn-sm btn-outline-primary mt-3 w-100">
+          <i class="bi bi-file-earmark-plus me-1"></i>Request LOR for this university
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setupUniFilters() {
+  const search  = document.getElementById('uniSearch');
+  const country = document.getElementById('countryFilter');
+  const field   = document.getElementById('fieldFilter');
+
+  const apply = () => {
+    let list = [...UNIVERSITIES];
+    const q = search.value.trim().toLowerCase();
+    if (q) list = list.filter(u =>
+      u.name.toLowerCase().includes(q) || u.country.toLowerCase().includes(q)
+    );
+    if (country.value) list = list.filter(u => u.country === country.value);
+    if (field.value)   list = list.filter(u => u.fields.includes(field.value));
+    renderUnis(list);
+  };
+
+  search.addEventListener('input', apply);
+  country.addEventListener('change', apply);
+  field.addEventListener('change', apply);
+}
+
+function resetUniFilters() {
+  document.getElementById('uniSearch').value   = '';
+  document.getElementById('countryFilter').value = '';
+  document.getElementById('fieldFilter').value   = '';
+  renderUnis(UNIVERSITIES);
+}
+</script>
+</body>
+</html>

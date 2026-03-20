@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Details — LOR Portal</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div class="logo-text">LOR Portal</div>
+    </div>
+
+    <h2>Student Details</h2>
+    <p class="auth-sub">Fill in your academic details to continue</p>
+
+    <form id="studentForm" novalidate>
+
+      <!-- Batch -->
+      <div class="mb-3">
+        <label class="form-label">Batch</label>
+        <select class="form-select" id="batch" required>
+          <option value="" disabled selected>Select your batch</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </select>
+        <div class="invalid-feedback">Please select batch.</div>
+      </div>
+
+      <!-- Branch -->
+      <div class="mb-3">
+        <label class="form-label">Branch</label>
+        <select class="form-select" id="branch" required>
+          <option value="" disabled selected>Select your branch</option>
+          <option value="CSE">CSE</option>
+          <option value="ISE">ISE</option>
+          <option value="ECE">ECE</option>
+        </select>
+        <div class="invalid-feedback">Please select branch.</div>
+      </div>
+
+      <!-- Name -->
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <select class="form-select" id="name" required>
+          <option value="" disabled selected>Select your name</option>
+        </select>
+        <div class="invalid-feedback">Please select your name.</div>
+      </div>
+
+      <!-- USN -->
+      <div class="mb-3">
+        <label class="form-label">USN</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-person-badge text-muted"></i>
+          </span>
+          <input type="text"
+                 class="form-control border-start-0 ps-0"
+                 id="usn"
+                 placeholder="Enter your USN"
+                 required />
+        </div>
+        <div class="invalid-feedback">Please enter USN.</div>
+      </div>
+
+      <!-- Option -->
+      <div class="mb-3">
+        <label class="form-label">Purpose</label>
+        <select class="form-select" id="option" required>
+          <option value="" disabled selected>Select purpose</option>
+          <option value="lor">LOR</option>
+          <option value="higher">Higher Studies</option>
+        </select>
+        <div class="invalid-feedback">Please select an option.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2">
+        <i class="bi bi-arrow-right-circle me-1"></i>Continue
+      </button>
+
+    </form>
+
+  </div>
+</div>
+
+<script src="../js/student-details.js"></script>
+</body>
+</html>
