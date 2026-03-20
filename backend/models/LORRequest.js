@@ -35,7 +35,7 @@ const lorSchema = new mongoose.Schema(
     },
 
     documentUrl: {
-      type: String, // later for PDF / upload
+      type: String,
     },
   },
   { timestamps: true }
