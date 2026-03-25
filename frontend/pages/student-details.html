@@ -18,7 +18,7 @@
     <!-- Logo -->
     <div class="auth-logo">
       <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
-      <div class="logo-text">LOR Portal</div>
+      <div class="logo-text">Updation</div>
     </div>
 
     <h2>Student Details</h2>
@@ -28,16 +28,15 @@
 
       <!-- Batch -->
       <div class="mb-3">
-        <label class="form-label">Batch</label>
-        <select class="form-select" id="batch" required>
-          <option value="" disabled selected>Select your batch</option>
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
+        <label for="batch" class="form-label">Batch</label>
+
+        <select class="form-select" id="lorName" required>
+          <option value="" disabled selected>Select batch</option>
         </select>
+
         <div class="invalid-feedback">Please select batch.</div>
       </div>
-
+    
       <!-- Branch -->
       <div class="mb-3">
         <label class="form-label">Branch</label>
@@ -46,48 +45,53 @@
           <option value="CSE">CSE</option>
           <option value="ISE">ISE</option>
           <option value="ECE">ECE</option>
+          <option value="AIML">AIML</option>
+           <option value="AIDS">AIDS</option>
+            <option value="EEE">EEE</option>
         </select>
         <div class="invalid-feedback">Please select branch.</div>
       </div>
 
-      <!-- Name -->
-      <div class="mb-3">
-        <label class="form-label">Name</label>
-        <select class="form-select" id="name" required>
-          <option value="" disabled selected>Select your name</option>
-        </select>
-        <div class="invalid-feedback">Please select your name.</div>
-      </div>
+      <!--Name-->
+      <div class="col-sm-6">
+        <label for="lorName" class="form-label">
+          Full Name <span class="text-danger">*</span>
+        </label>
 
-      <!-- USN -->
-      <div class="mb-3">
-        <label class="form-label">USN</label>
-        <div class="input-group">
-          <span class="input-group-text bg-white border-end-0">
-            <i class="bi bi-person-badge text-muted"></i>
-          </span>
-          <input type="text"
-                 class="form-control border-start-0 ps-0"
-                 id="usn"
-                 placeholder="Enter your USN"
-                 required />
-        </div>
-        <div class="invalid-feedback">Please enter USN.</div>
+        <select class="form-select" id="batch" required>
+          <option value="" disabled selected>Select your batch</option>
+        </select>
+
+        <div class="invalid-feedback">Full name is required.</div>
+      </div>
+                  
+      <!--USN-->
+      <div class="col-sm-6">
+        <label for="lorUSN" class="form-label">USN <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="lorUSN" readonly />
+                    
+        <div class="invalid-feedback">Enter a valid USN (e.g. CS21B1001).</div>
       </div>
 
       <!-- Option -->
       <div class="mb-3">
-        <label class="form-label">Purpose</label>
-        <select class="form-select" id="option" required>
-          <option value="" disabled selected>Select purpose</option>
-          <option value="lor">LOR</option>
-          <option value="higher">Higher Studies</option>
-        </select>
+        <label class="form-label">Current Status</label>
+
+        <input list="statusOptions" class="form-control"
+            id="option" placeholder="Select or type your status" required>
+
+        <datalist id="statusOptions">
+          <option value="Working">
+          <option value="Higher Studies">
+          <option value="None">
+          <option value="Others">
+        </datalist>
+
         <div class="invalid-feedback">Please select an option.</div>
       </div>
 
       <button type="submit" class="btn btn-primary w-100 mt-2">
-        <i class="bi bi-arrow-right-circle me-1"></i>Continue
+        <i class="bi bi-arrow-right-circle me-1"></i>Submit
       </button>
 
     </form>
@@ -96,5 +100,16 @@
 </div>
 
 <script src="../js/student-details.js"></script>
+<!-- your other scripts -->
+<script src="../js/api.js"></script>
+<script src="../js/student-dashboard.js"></script>
+
+
+
+  
+
+
+</body>
+</html>
 </body>
 </html>

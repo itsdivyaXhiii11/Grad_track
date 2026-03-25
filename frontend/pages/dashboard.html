@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap -->
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .dashboard-title {
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      transition: 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card img {
+      height: 180px;
+      object-fit: cover;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    .btn-custom {
+      border-radius: 20px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<div class="container text-center mt-5">
+  <h2 class="dashboard-title">Student Dashboard</h2>
+
+  <div class="row g-4">
+
+```
+<!-- LOR Request -->
+<div class="col-md-4">
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1588072432836-e10032774350" alt="LOR">
+    <div class="card-body">
+      <h5 class="card-title">LOR Request</h5>
+      <p class="card-text">Request and track your Letters of Recommendation.</p>
+      <a href="lor-request.html" class="btn btn-primary btn-custom">Open</a>
+    </div>
+  </div>
+</div>
+
+<!-- Higher Studies -->
+<div class="col-md-4">
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94" alt="Higher Studies">
+    <div class="card-body">
+      <h5 class="card-title">Higher Studies</h5>
+      <p class="card-text">Update your higher studies information.</p>
+      <a href="higher-studies.html" class="btn btn-success btn-custom">Open</a>
+    </div>
+  </div>
+</div>
+
+<!-- Current Status -->
+<div class="col-md-4">
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df" alt="Status">
+    <div class="card-body">
+      <h5 class="card-title">Current Status</h5>
+      <p class="card-text">Update your current placement or job status.</p>
+      <a href="./student-details.html" class="btn btn-warning btn-custom">Open</a>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+</body>
+</html>

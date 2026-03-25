@@ -1,57 +1,60 @@
-// Sample student data (later this comes from database)
-const students = {
-  CSE: ["Aarav", "Diya", "Rahul"],
-  ISE: ["Sneha", "Kiran", "Megha"],
-  ECE: ["Arjun", "Pooja", "Nikhil"]
-};
+document.addEventListener("DOMContentLoaded", function () {
 
-const branchSelect = document.getElementById("branch");
-const nameSelect = document.getElementById("name");
+  const batch = document.getElementById("batch");
+  const branch = document.getElementById("branch");
+  const nameDropdown = document.getElementById("lorName");
+  const usnInput = document.getElementById("lorUSN");
 
-// When branch changes → update names
-branchSelect.addEventListener("change", function () {
-  const selectedBranch = this.value;
-
-  // Clear previous options
-  nameSelect.innerHTML = `<option value="" disabled selected>Select your name</option>`;
-
-  if (students[selectedBranch]) {
-    students[selectedBranch].forEach(student => {
-      const option = document.createElement("option");
-      option.value = student;
-      option.textContent = student;
-      nameSelect.appendChild(option);
-    });
+  // Batch years
+  const currentYear = new Date().getFullYear();
+  for (let i = 2020; i <= currentYear + 2; i++) {
+    let option = document.createElement("option");
+    option.value = i;
+    option.textContent = i;
+    batch.appendChild(option);
   }
+
+  // Load students from backend
+  async function loadStudents() {
+    const selectedBatch = batch.value;
+    const selectedBranch = branch.value;
+
+    if (!selectedBatch || !selectedBranch) return;
+
+    usnInput.value = "";
+
+    nameDropdown.innerHTML = '<option disabled selected>Loading...</option>';
+
+    try {
+      const res = await fetch(`/students?batch=${selectedBatch}&branch=${selectedBranch}`);
+      const data = await res.json();
+
+      if (data.length === 0) {
+        nameDropdown.innerHTML = '<option disabled selected>No students found</option>';
+        return;
+      }
+
+      nameDropdown.innerHTML = '<option disabled selected>Select student</option>';
+
+      data.forEach(student => {
+        let option = document.createElement("option");
+        option.value = student.usn;
+        option.textContent = `${student.name} (${student.usn})`;
+        nameDropdown.appendChild(option);
+      });
+
+    } catch (err) {
+      nameDropdown.innerHTML = '<option disabled selected>Error loading students</option>';
+    }
+  }
+
+  // Events
+  batch.addEventListener("change", loadStudents);
+  branch.addEventListener("change", loadStudents);
+
+  nameDropdown.addEventListener("change", function () {
+    usnInput.value = this.value;
+  });
+
 });
 
-// Form submit
-document.getElementById("studentForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const form = this;
-
-  if (!form.checkValidity()) {
-    form.classList.add("was-validated");
-    return;
-  }
-
-  const batch = document.getElementById("batch").value;
-  const branch = document.getElementById("branch").value;
-  const name = document.getElementById("name").value;
-  const usn = document.getElementById("usn").value;
-  const option = document.getElementById("option").value;
-
-  // Store data
-  localStorage.setItem("batch", batch);
-  localStorage.setItem("branch", branch);
-  localStorage.setItem("name", name);
-  localStorage.setItem("usn", usn);
-
-  // Redirect
-  if (option === "lor") {
-    window.location.href = "student-dashboard.html";
-  } else if (option === "higher") {
-    window.location.href = "higher-studies.html";
-  }
-});
