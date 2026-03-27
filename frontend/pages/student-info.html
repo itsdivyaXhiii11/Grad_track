@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Details | Student Portal</title>
+
+  <!-- Google Fonts: Sora (headings) + DM Sans (body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ─── CSS Variables ─────────────────────────────── */
+    :root {
+        --bg:        #f4f6fb;
+        --surface:   #ffffff;
+        --border:    #e2e8f0;
+        --accent:    #1a56db;
+        --accent-dk: #1345b7;
+        --text:      #0f172a;
+        --muted:     #475569;
+        --error:     #dc2626;
+        --success:   #16a34a;
+        --radius:    12px;
+        --font-head: 'Syne', sans-serif;
+        --font-body: 'DM Sans', sans-serif;
+    }
+    /* ─── Reset & Base ──────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      /* subtle grid texture */
+      background-image:
+        linear-gradient(rgba(79,142,247,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ─── Card ──────────────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2.8rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,.5);
+      animation: slideUp .45s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity:0; transform: translateY(28px); }
+      to   { opacity:1; transform: translateY(0);    }
+    }
+
+    /* ─── Header ────────────────────────────────────── */
+    .card-header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.4rem;
+    }
+    .card-header .badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-family: var(--font-head);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(79,142,247,.12);
+      border: 1px solid rgba(79,142,247,.3);
+      border-radius: 20px;
+      padding: .25rem .75rem;
+      margin-bottom: .8rem;
+    }
+    .card-header h1 {
+      font-family: var(--font-head);
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .card-header p {
+      color: var(--muted);
+      font-size: .875rem;
+      margin-top: .4rem;
+    }
+
+    /* ─── Form Layout ───────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: .45rem; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: .78rem;
+      font-family: var(--font-head);
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    label span.req { color: var(--error); margin-left: 2px; }
+
+    input, select {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      padding: .65rem .9rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input::placeholder { color: var(--muted); opacity: .7; }
+
+    /* Custom select arrow */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: .9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: .8rem;
+    }
+    select { padding-right: 2rem; cursor: pointer; }
+    select option { background: var(--surface); }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,142,247,.18);
+    }
+
+    /* Read-only / auto-filled fields */
+    input[readonly] {
+      color: var(--muted);
+      cursor: not-allowed;
+      border-style: dashed;
+    }
+
+    /* Error state */
+    .form-group.has-error input,
+    .form-group.has-error select {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(248,81,73,.15);
+    }
+    .error-msg {
+      font-size: .75rem;
+      color: var(--error);
+      min-height: 1rem;
+      display: none;
+    }
+    .form-group.has-error .error-msg { display: block; }
+
+    /* ─── Submit Button ──────────────────────────────── */
+    .btn-submit {
+      margin-top: 1.6rem;
+      width: 100%;
+      padding: .85rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-head);
+      font-size: .95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      letter-spacing: .03em;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      box-shadow: 0 4px 18px rgba(79,142,247,.35);
+    }
+    .btn-submit:hover {
+      background: var(--accent-dk);
+      box-shadow: 0 6px 24px rgba(79,142,247,.45);
+    }
+    .btn-submit:active { transform: scale(.98); }
+
+    /* ─── Toast notification ─────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #1c2128;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--success);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: .85rem;
+      padding: .8rem 1.2rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 500px) {
+      .card { padding: 1.8rem 1.4rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Main Card ──────────────────────────────────── -->
+  <div class="card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <span class="badge">Student Portal</span>
+      <h1>Student Details</h1>
+      <p>Fill in your information to continue to the next step.</p>
+    </div>
+
+    <!-- Form -->
+    <form id="studentForm" novalidate>
+      <div class="form-grid">
+
+        <!-- Batch -->
+        <div class="col-sm-6">
+            <label class="form-label">Batch</label>
+            <select class="form-select" id="batch" required>
+                <option value="" disabled selected>Select your batch</option>
+            </select>
+                    
+            <div class="invalid-feedback">Please select batch.</div>
+        </div>
+
+        <!-- Branch -->
+        <div class="form-group" id="grp-branch">
+          <label for="branch">Branch <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select class="form-select" id="batch" required>
+                <option value="">Select Batch</option>
+            </select>
+          </div>
+          <span class="error-msg" id="err-branch">Please select a branch.</span>
+        </div>
+
+        <!-- Name (dynamic) -->
+        <div class="form-group full" id="grp-name">
+          <label for="studentName">Name <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="studentName" name="studentName">
+              <option value="">Select Branch First</option>
+            </select>
+          </div>
+          <span class="error-msg" id="err-name">Please select your name.</span>
+        </div>
+
+        <!-- USN (auto-filled) -->
+        <div class="form-group full" id="grp-usn">
+          <label for="usn">USN <span class="req">*</span></label>
+          <input type="text" id="usn" name="usn" placeholder="Auto-filled on name selection" readonly />
+          <span class="error-msg" id="err-usn">USN not found.</span>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="form-group" id="grp-phone">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="10-digit number" maxlength="10" />
+          <span class="error-msg" id="err-phone">Enter a valid 10-digit phone number.</span>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group" id="grp-email">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" />
+          <span class="error-msg" id="err-email">Enter a valid email address.</span>
+        </div>
+
+        <!-- Purpose -->
+        <div class="form-group full" id="grp-purpose">
+          <label for="purpose">Purpose <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="purpose" name="purpose">
+              <option value="">Select Purpose</option>
+              <option value="lor">LOR Application</option>
+              <option value="higher-studies">Higher Studies</option>
+              <option value="status">Current Status Update</option>
+            </select>
+          </div>
+          <span class="error-msg" id="err-purpose">Please select a purpose.</span>
+        </div>
+
+      </div><!-- /form-grid -->
+
+      <button type="submit" class="btn-submit">Continue →</button>
+    </form>
+
+  </div><!-- /card -->
+
+  <!-- Toast -->
+  <div class="toast" id="toast">✓ Details saved! Redirecting…</div>
+
+  <!-- Link to the external JS file -->
+  <script src="./student-info.js"></script>
+
+</body>
+</html>

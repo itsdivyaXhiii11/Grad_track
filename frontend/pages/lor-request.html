@@ -35,70 +35,7 @@
 
               <form id="lorRequestForm" novalidate>
 
-                <!-- Student Info -->
-                <div class="form-section-title">Student Information</div>
-
-                  <div class="row g-3">
-                     <!-- Batch -->
-                    <div class="col-sm-6">
-                      <label class="form-label">Batch</label>
-                      <select class="form-select" id="batch" required>
-                        <option value="" disabled selected>Select your batch</option>
-                      </select>
-                    
-                      <div class="invalid-feedback">Please select batch.</div>
-                    </div>
-                     <!-- Branch -->
-                    <div class="mb-3">
-                      <label class="form-label">Branch</label>
-                      <select class="form-select" id="branch" required>
-                        <option value="" disabled selected>Select your branch</option>
-                        <option value="CSE">CSE</option>
-                        <option value="ISE">ISE</option>
-                        <option value="ECE">ECE</option>
-                        <option value="AIML">AIML</option>
-                        <option value="AIDS">AIDS</option>
-                        <option value="EEE">EEE</option>
-                      </select>
-                      <div class="invalid-feedback">Please select branch.</div>
-                    </div>
-                    <!--Name-->
-                    <div class="col-sm-6">
-                      <label for="lorName" class="form-label">
-                          Full Name <span class="text-danger">*</span>
-                      </label>
-
-                      <select class="form-select" id="lorName" required>
-                        <option value="" disabled selected>Select student name</option>
-                      </select>
-
-                      <div class="invalid-feedback">Full name is required.</div>
-                    </div>
-                  
-                    <!--USN-->
-                    <div class="col-sm-6">
-                      <label for="lorUSN" class="form-label">USN <span class="text-danger">*</span></label>
-                      <input type="text" class="form-control" id="lorUSN" readonly />
-                    
-                      <div class="invalid-feedback">Enter a valid USN (e.g. CS21B1001).</div>
-                    </div>
-                   
-                  <!--SEM-->
-                    <div class="col-sm-6">
-                      <label for="lorSemester" class="form-label">Current Semester</label>
-
-                      <input list="semOptions" class="form-control" id="lorSemester"
-                      placeholder="Select Semester" required>
-
-                      <datalist id="semOptions">
-                        <option value="5th">
-                        <option value="6th">
-                        <option value="7th">
-                        <option value="8th">
-                        <option value="Alumni">
-                      </datalist>
-                    </div>
-
+               
 
 
                 <!-- Request Details -->
@@ -121,26 +58,48 @@
                     </select>
                     <div class="invalid-feedback">Please select a faculty member.</div>
                   </div>
-                  <div class="col-sm-6">
-                    <label for="lorPurpose" class="form-label">Purpose <span class="text-danger">*</span></label>
-                    <select class="form-select" id="lorPurpose" required>
-                      <option value="" disabled selected>Select purpose</option>
-                      <option value="Masters Abroad">Masters Abroad</option>
-                      <option value="Masters India">Masters India (GATE/CAT)</option>
-                      <option value="PhD">PhD Application</option>
-                      <option value="Internship">Internship</option>
-                      <option value="Job">Job Application</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <div class="invalid-feedback">Please select the purpose.</div>
+
+                  <!--university name-->
+                  <div class="mb-3">
+                    <label for="university" class="form-label">University Name</label>
+                    <input type="text" id="university" class="form-control" required placeholder="Enter university name">
                   </div>
 
-                  <div class="col-12">
-                    <label for="lorDescription" class="form-label">Brief Description</label>
-                    <textarea class="form-control" id="lorDescription" rows="3"
-                              placeholder="Briefly describe the program or opportunity you are applying for…"></textarea>
+                  <!--country-->
+                  
+                  <div class="mb-3">
+                    <label for="country" class="form-label">Country</label>
+                    <input type="text" id="country" class="form-control" required placeholder="Enter country name">
                   </div>
-                </div>
+
+                  <!-- Course -->
+                  <div class="mb-3">
+                    <label for="course" class="form-label">Course</label>
+                    <input type="text" id="course" class="form-control" required placeholder="Enter course name">
+                  </div>
+
+                  <!-- Timeline -->
+                  <div class="mb-3">
+                    <label for="timeline" class="form-label">Timeline</label>
+                    <select id="timeline" class="form-select" required>
+                      <option value="">Select Timeline</option>
+                      <option value="15 days">15 days</option>
+                      <option value="1 month">1 month</option>
+                      <option value="2 months">2 months</option>
+                      <option value="3 months">3 months</option>
+                      <option value="6 months">6 months</option>
+                    </select>
+                  </div>
+
+                  <!-- File Upload -->
+                  <div class="mb-3">
+                    <label for="file" class="form-label">Upload File (PDF, DOC, DOCX only)</label>
+                    <input type="file" id="file" class="form-control" accept=".pdf,.doc,.docx" required>
+                  </div>
+                
+                 
+
+                  
 
                 <!-- Conditional: Abroad Fields -->
                 <div id="abroadSection" class="d-none">
@@ -200,72 +159,7 @@
 <script src="../js/api.js"></script>
 <script src="../js/student-dashboard.js"></script>
 <script src="../js/lor-request.js"></script>
-<script>
-const batch = document.getElementById("batch");
-const branch = document.getElementById("branch");
-const nameDropdown = document.getElementById("lorName");
-const usnInput = document.getElementById("lorUSN");
-</script>
 
-<script>
-batch.addEventListener("change", loadStudents);
-branch.addEventListener("change", loadStudents);
-
-nameDropdown.addEventListener("change", function () {
-  usnInput.value = this.value;
-});
-</script>
-<!-- Batch year script -->
-<script>
-  const batchSelect = document.getElementById("batch");
-
-if (batchSelect) {
-  const currentYear = new Date().getFullYear();
-
-  for (let i = 2020; i <= currentYear + 2; i++) {
-    let option = document.createElement("option");
-    option.value = i;
-    option.textContent = i;
-    batchSelect.appendChild(option);
-  }
-}
-</script>
-<!--auto name and usn-->
-
-<script>
-async function loadStudents() {
-  const selectedBatch = batch.value;
-  const selectedBranch = branch.value;
-
-  if (!selectedBatch || !selectedBranch) return;
-
-  usnInput.value = ""; // clear old USN
-
-  nameDropdown.innerHTML = '<option disabled selected>Loading...</option>';
-
-  try {
-    const res = await fetch(`/students?batch=${selectedBatch}&branch=${selectedBranch}`);
-    const data = await res.json();
-
-    if (data.length === 0) {
-      nameDropdown.innerHTML = '<option disabled selected>No students found</option>';
-      return;
-    }
-
-    nameDropdown.innerHTML = '<option disabled selected>Select student</option>';
-
-    data.forEach(student => {
-      let option = document.createElement("option");
-      option.value = student.usn;
-      option.textContent = `${student.name} (${student.usn})`;
-      nameDropdown.appendChild(option);
-    });
-
-  } catch (err) {
-    nameDropdown.innerHTML = '<option disabled selected>Error loading students</option>';
-  }
-}
-</script>
 
 </body>
 </html>

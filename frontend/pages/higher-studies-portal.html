@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Higher Studies — Student Portal</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #f5f3ee;
+      --surface:    #ffffff;
+      --border:     #e0dbd2;
+      --ink:        #1a1714;
+      --ink-muted:  #6b6560;
+      --accent:     #2f5be7;
+      --accent-dk:  #1a3db5;
+      --accent-lt:  #eef1fd;
+      --success:    #1c7c4a;
+      --success-lt: #e8f7ef;
+      --error:      #c0392b;
+      --error-lt:   #fdf0ee;
+      --radius:     10px;
+      --shadow:     0 2px 16px rgba(0,0,0,.07);
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* ── Layout ───────────────────────────────────── */
+    .page-wrap {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+    }
+
+    /* ── Sidebar ──────────────────────────────────── */
+    .sidebar {
+      background: var(--ink);
+      color: #fff;
+      padding: 52px 40px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 40px;
+      padding: 5px 14px 5px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+      margin-bottom: 36px;
+    }
+
+    .sidebar-badge span.dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4ecc8f;
+      display: inline-block;
+    }
+
+    .sidebar h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.15rem;
+      line-height: 1.2;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .sidebar h1 em {
+      font-style: italic;
+      color: #a8b8f8;
+    }
+
+    .sidebar p {
+      font-size: 14px;
+      color: rgba(255,255,255,.55);
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+
+    .sidebar-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 13.5px;
+      color: rgba(255,255,255,.6);
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,.5);
+      margin-top: 2px;
+    }
+
+    .sidebar-steps li.active .step-num {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .sidebar-steps li.active {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 12px;
+      color: rgba(255,255,255,.25);
+    }
+
+    /* ── Main Content ─────────────────────────────── */
+    .main {
+      padding: 52px 56px;
+      overflow-y: auto;
+    }
+
+    .form-header {
+      margin-bottom: 36px;
+    }
+
+    .form-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.85rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .form-header p {
+      color: var(--ink-muted);
+      font-size: 14px;
+    }
+
+    /* ── Card ─────────────────────────────────────── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 40px;
+      box-shadow: var(--shadow);
+      max-width: 680px;
+    }
+
+    /* ── Form Groups ──────────────────────────────── */
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 8px;
+    }
+
+    label .req {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .form-control, .form-select {
+      width: 100%;
+      padding: 11px 15px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      color: var(--ink);
+      background: #faf9f7;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b6560' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(47,91,231,.12);
+    }
+
+    .form-control.is-invalid, .form-select.is-invalid {
+      border-color: var(--error);
+      background: var(--error-lt);
+      box-shadow: 0 0 0 3px rgba(192,57,43,.08);
+    }
+
+    .invalid-feedback {
+      display: none;
+      font-size: 12.5px;
+      color: var(--error);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .is-invalid ~ .invalid-feedback,
+    .form-select.is-invalid + .invalid-feedback {
+      display: block;
+    }
+
+    /* custom field reveal */
+    .custom-field-wrap {
+      margin-top: 14px;
+      display: none;
+      animation: fadeIn .22s ease;
+    }
+
+    .custom-field-wrap.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .custom-field-wrap label {
+      color: var(--accent);
+    }
+
+    /* ── Divider ──────────────────────────────────── */
+    .form-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    /* ── Submit Button ────────────────────────────── */
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 13px 30px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s, transform .12s, box-shadow .18s;
+      box-shadow: 0 2px 10px rgba(47,91,231,.28);
+    }
+
+    .btn-submit:hover {
+      background: var(--accent-dk);
+      box-shadow: 0 4px 18px rgba(47,91,231,.36);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-submit svg {
+      transition: transform .18s;
+    }
+
+    .btn-submit:not(:disabled):hover svg {
+      transform: translateX(3px);
+    }
+
+    /* spinner inside button */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-icon { display: none; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Toast ────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      top: 24px;
+      right: 28px;
+      min-width: 300px;
+      max-width: 400px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,.13);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(-10px) scale(.97);
+      transition: opacity .28s, transform .28s;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    #toast.success {
+      background: var(--success-lt);
+      border: 1px solid #b3e6cd;
+      color: var(--success);
+    }
+
+    #toast.error {
+      background: var(--error-lt);
+      border: 1px solid #f0b8b2;
+      color: var(--error);
+    }
+
+    .toast-icon {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    #toast.success .toast-icon { background: #d0f0e2; }
+    #toast.error   .toast-icon { background: #fbd8d5; }
+
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 700; margin-bottom: 2px; font-size: 14px; }
+    .toast-msg   { font-size: 13px; opacity: .8; }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 860px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: 36px 28px;
+      }
+      .sidebar-steps { flex-direction: row; flex-wrap: wrap; gap: 14px; }
+      .main { padding: 36px 24px; }
+      .form-card { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toast Notification -->
+<div id="toast" role="alert" aria-live="assertive">
+  <div class="toast-icon" id="toast-icon"></div>
+  <div class="toast-body">
+    <div class="toast-title" id="toast-title"></div>
+    <div class="toast-msg"   id="toast-msg"></div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+ 
+  <!-- Main Form Area -->
+  <main class="main">
+    <div class="form-header">
+      <h2>Institution Details</h2>
+      <p>Step 1 of 3 &mdash; Provide the details of your higher education institution.</p>
+    </div>
+
+    <div class="form-card">
+      <form id="higher-studies-form" novalidate>
+
+        <!-- State -->
+        <div class="form-group">
+          <label for="state">State <span class="req">*</span></label>
+          <input
+            type="text"
+            id="state"
+            name="state"
+            class="form-control"
+            placeholder="e.g. Karnataka, Tamil Nadu…"
+            autocomplete="address-level1"
+            required
+          />
+          <div class="invalid-feedback" id="state-error">Please enter your state.</div>
+        </div>
+
+        <!-- College Name -->
+        <div class="form-group">
+          <label for="collegeName">College / University Name <span class="req">*</span></label>
+          <input
+            type="text"
+            id="collegeName"
+            name="collegeName"
+            class="form-control"
+            placeholder="e.g. IISc Bangalore…"
+            required
+          />
+          <div class="invalid-feedback" id="collegeName-error">Please enter the college name.</div>
+        </div>
+
+        <!-- Field of Study -->
+        <div class="form-group">
+          <label for="fieldOfStudy">Field of Study <span class="req">*</span></label>
+          <select id="fieldOfStudy" name="fieldOfStudy" class="form-select" required>
+            <option value="" disabled selected>— Select a field —</option>
+            <option value="Software Engineering">Software Engineering</option>
+            <option value="Artificial Intelligence">Artificial Intelligence</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Cyber Security">Cyber Security</option>
+            <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
+            <option value="Cloud Computing">Cloud Computing</option>
+            <option value="Machine Learning">Machine Learning</option>
+            <option value="Robotics">Robotics</option>
+            <option value="Information Systems">Information Systems</option>
+            <option value="Embedded Systems">Embedded Systems</option>
+            <option value="Other">Other (please specify)</option>
+          </select>
+          <div class="invalid-feedback" id="fieldOfStudy-error">Please select a field of study.</div>
+
+          <!-- Other — custom field -->
+          <div class="custom-field-wrap" id="customFieldWrap">
+            <label for="customField">Specify Your Field <span class="req">*</span></label>
+            <input
+              type="text"
+              id="customField"
+              name="customField"
+              class="form-control"
+              placeholder="Enter your field of study…"
+            />
+            <div class="invalid-feedback" id="customField-error">Please specify your field of study.</div>
+          </div>
+        </div>
+
+          <!-- File Upload -->
+        <div class="mb-3">
+            <label for="file" class="form-label">Upload proof( eg ID card or Admission letter) (PDF, DOC, DOCX only)</label>
+            <input type="file" id="file" class="form-control" accept=".pdf,.doc,.docx">
+        </div>
+
+        <hr class="form-divider" />
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="spinner" id="btn-spinner"></span>
+          <svg class="btn-icon" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.5 8.5h10M9 4l4.5 4.5L9 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Submit Application
+        </button>
+
+      </form>
+    </div>
+  </main>
+
+</div>
+
+<script src="higher-studies-portal.js"></script>
+</body>
+</html>

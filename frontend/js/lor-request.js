@@ -1,187 +1,111 @@
-/**
- * lor-request.js — LOR request form logic
- * Handles faculty loading, conditional abroad fields, and form submission
- */
+document.addEventListener("DOMContentLoaded", () => {
+  const faculty1Select = document.getElementById("faculty1");
+  const faculty2Select = document.getElementById("faculty2");
+  const lorForm = document.getElementById("lorRequestForm");
+  const alertBox = document.getElementById("alertBox");
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const user = requireAuth();
-  if (!user) return;
-
-  await injectComponents('Request LOR');
-
-  // Pre-fill student details from session
-  if (user.name)   document.getElementById('lorName').value   = user.name;
-  if (user.usn)    document.getElementById('lorUSN').value    = user.usn;
-  if (user.branch) document.getElementById('lorBranch').value = user.branch;
-
-  await loadFacultyDropdown();
-  setupAbroadToggle();
-  setupFormSubmission();
-});
-
-/** Fetch faculty list from API and populate dropdown */
-async function loadFacultyDropdown() {
-  const select = document.getElementById('lorFaculty');
-  try {
-    const res = await apiCall('/faculty/list', 'GET');
-    if (res.success && res.data.length) {
-      select.innerHTML = '<option value="" disabled selected>Select faculty</option>' +
-        res.data.map(f => `<option value="${f.id}">${f.name} — ${f.department}</option>`).join('');
-    } else {
-      select.innerHTML = '<option value="" disabled selected>No faculty available</option>';
-    }
-  } catch {
-    select.innerHTML = '<option value="" disabled selected>Failed to load</option>';
-  }
-}
-
-/** Show/hide abroad-specific fields based on purpose selection */
-function setupAbroadToggle() {
-  const purposeSelect   = document.getElementById('lorPurpose');
-  const abroadSection   = document.getElementById('abroadSection');
-  const universityField = document.getElementById('lorUniversity');
-
-  purposeSelect.addEventListener('change', () => {
-    const isAbroad = purposeSelect.value === 'Masters Abroad' || purposeSelect.value === 'PhD';
-    abroadSection.classList.toggle('d-none', !isAbroad);
-    universityField.required = isAbroad;
-  });
-}
-
-/** Handle form submission */
-function setupFormSubmission() {
-  const form       = document.getElementById('lorRequestForm');
-  const alertBox   = document.getElementById('requestAlert');
-  const btnText    = document.getElementById('lorBtnText');
-  const btnSpinner = document.getElementById('lorBtnSpinner');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    hideAlert();
-
-    if (!form.checkValidity()) {
-      form.classList.add('was-validated');
-      return;
-    }
-
-    const purpose   = document.getElementById('lorPurpose').value;
-    const isAbroad  = purpose === 'Masters Abroad' || purpose === 'PhD';
-
-    const payload = {
-      name:         document.getElementById('lorName').value.trim(),
-      usn:          document.getElementById('lorUSN').value.trim().toUpperCase(),
-      branch:       document.getElementById('lorBranch').value,
-      semester:     document.getElementById('lorSemester').value,
-      facultyId:    document.getElementById('lorFaculty').value,
-      purpose,
-      description:  document.getElementById('lorDescription').value.trim(),
-      achievements: document.getElementById('lorAchievements').value.trim(),
-      abroad: isAbroad,
-      university:   isAbroad ? document.getElementById('lorUniversity').value.trim() : '',
-      country:      isAbroad ? document.getElementById('lorCountry').value.trim()    : '',
-      program:      isAbroad ? document.getElementById('lorProgram').value.trim()    : '',
-      deadline:     isAbroad ? document.getElementById('lorDeadline').value          : '',
-    };
-
-    setLoading(true);
+  // Fetch faculty list from backend
+  async function fetchFacultyList() {
     try {
-      const res = await apiCall('/lor/submit', 'POST', payload);
-      if (res.success) {
-        showAlert(`✅ Request submitted successfully! Your request ID is #${res.id}.`, 'success');
-        form.reset();
-        form.classList.remove('was-validated');
-        document.getElementById('abroadSection').classList.add('d-none');
-      } else {
-        showAlert(res.message || 'Submission failed. Try again.', 'danger');
-      }
-    } catch (err) {
-      showAlert('An error occurred. Please try again.', 'danger');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      const response = await fetch("/api/faculty");
+      if (!response.ok) throw new Error("Failed to fetch faculty list");
+
+      const data = await response.json();
+      populateDropdown(faculty1Select, data);
+      populateDropdown(faculty2Select, data);
+    } catch (error) {
+      showAlert("danger", "Error loading faculty list. Please try again later.");
+      console.error(error);
     }
-  });
-
-  function setLoading(loading) {
-    btnText.classList.toggle('d-none', loading);
-    btnSpinner.classList.toggle('d-none', !loading);
-    document.getElementById('lorSubmitBtn').disabled = loading;
   }
 
-  function showAlert(msg, type) {
-    alertBox.innerHTML  = msg;
-    alertBox.className  = `alert alert-${type}`;
-    alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  function populateDropdown(selectElement, facultyList) {
+    selectElement.innerHTML = '<option value="">Select Faculty</option>';
+    facultyList.forEach(faculty => {
+      const option = document.createElement("option");
+      option.value = faculty.name;
+      option.textContent = faculty.name;
+      selectElement.appendChild(option);
+    });
   }
 
-  function hideAlert() {
-    alertBox.className = 'alert d-none';
+  // Form validation
+  function validateForm() {
+    const university = document.getElementById("university").value.trim();
+    const country = document.getElementById("country").value.trim();
+    const course = document.getElementById("course").value.trim();
+    const timeline = document.getElementById("timeline").value.trim();
+    const fileInput = document.getElementById("file");
+
+    if (!university || !country || !course || !timeline || !fileInput.files.length) {
+      showAlert("warning", "Please fill all required fields.");
+      return false;
+    }
+
+    const file = fileInput.files[0];
+    const validTypes = ["application/pdf", "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!validTypes.includes(file.type)) {
+      showAlert("warning", "Invalid file type. Allowed: PDF, DOC, DOCX.");
+      return false;
+    }
+
+    return true;
   }
-}
 
+  // Handle form submission
+  lorForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-const batch = document.getElementById("batch");
-const branch = document.getElementById("branch");
-const nameDropdown = document.getElementById("lorName");
-const usnInput = document.getElementById("lorUSN");
+    if (!validateForm()) return;
 
+    // Decide which faculty values to use
+    const faculty1 = faculty1Select.value || document.getElementById("faculty1Manual").value.trim();
+    const faculty2 = faculty2Select.value || document.getElementById("faculty2Manual").value.trim();
 
-
-batch.addEventListener("change", loadStudents);
-branch.addEventListener("change", loadStudents);
-
-nameDropdown.addEventListener("change", function () {
-  usnInput.value = this.value;
-});
-
-//-- Batch year script -->
-
-  const batchSelect = document.getElementById("batch");
-
-if (batchSelect) {
-  const currentYear = new Date().getFullYear();
-
-  for (let i = 2020; i <= currentYear + 2; i++) {
-    let option = document.createElement("option");
-    option.value = i;
-    option.textContent = i;
-    batchSelect.appendChild(option);
-  }
-}
-
-//--auto name and usn-->
-
-
-async function loadStudents() {
-  const selectedBatch = batch.value;
-  const selectedBranch = branch.value;
-
-  if (!selectedBatch || !selectedBranch) return;
-
-  usnInput.value = ""; // clear old USN
-
-  nameDropdown.innerHTML = '<option disabled selected>Loading...</option>';
-
-  try {
-    const res = await fetch(`/students?batch=${selectedBatch}&branch=${selectedBranch}`);
-    const data = await res.json();
-
-    if (data.length === 0) {
-      nameDropdown.innerHTML = '<option disabled selected>No students found</option>';
+    if (!faculty1 || !faculty2) {
+      showAlert("warning", "Please provide names for both faculties.");
       return;
     }
 
-    nameDropdown.innerHTML = '<option disabled selected>Select student</option>';
+    const formData = new FormData();
+    formData.append("faculty1", faculty1);
+    formData.append("faculty2", faculty2);
+    formData.append("university", document.getElementById("university").value.trim());
+    formData.append("country", document.getElementById("country").value.trim());
+    formData.append("course", document.getElementById("course").value.trim());
+    formData.append("timeline", document.getElementById("timeline").value.trim());
+    formData.append("file", document.getElementById("file").files[0]);
 
-    data.forEach(student => {
-      let option = document.createElement("option");
-      option.value = student.usn;
-      option.textContent = `${student.name} (${student.usn})`;
-      nameDropdown.appendChild(option);
-    });
+    try {
+      const response = await fetch("/api/lor-request", {
+        method: "POST",
+        body: formData
+      });
 
-  } catch (err) {
-    nameDropdown.innerHTML = '<option disabled selected>Error loading students</option>';
+      if (!response.ok) throw new Error("Failed to submit form");
+
+      showAlert("success", "LOR request submitted successfully!");
+      lorForm.reset();
+    } catch (error) {
+      showAlert("danger", "Error submitting form. Please try again.");
+      console.error(error);
+    }
+  });
+
+  // Show alert message
+  function showAlert(type, message) {
+    alertBox.className = `alert alert-${type}`;
+    alertBox.textContent = message;
+    alertBox.classList.remove("d-none");
+
+    setTimeout(() => {
+      alertBox.classList.add("d-none");
+    }, 4000);
   }
-}
+
+  // Initialize
+  fetchFacultyList();
+});
+
 
