@@ -1,9 +1,47 @@
-const express = require("express");
-const router = express.Router();
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-const { register, login } = require("../controllers/authController");
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
 
-router.post("/register", register);
-router.post("/login", login);
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 
-module.exports = router;
+  password: {
+    type: String,
+    required: true,
+  },
+
+  role: {
+    type: String,
+    enum: ["student", "faculty", "admin"],
+    default: "student",
+  },
+}, { timestamps: true });
+
+
+// 🔐 HASH PASSWORD BEFORE SAVING
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
+  
+    try {
+      this.password = await bcrypt.hash(this.password, 10);
+    } catch (err) {
+      throw err;
+    }
+  });
+
+
+// 🔐 COMPARE PASSWORD (LOGIN)
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+
+module.exports = mongoose.model("User", userSchema);
