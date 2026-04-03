@@ -15,6 +15,7 @@
 //  1. SAMPLE STUDENT DATA  (replace with real data or API later)
 //     Structure: { BRANCH: [ { name, usn }, … ] }
 // ════════════════════════════════════════════════════
+
 const studentData = {
   CSE: [
     { name: "Aarav Sharma",    usn: "1SI21CS001" },
@@ -102,6 +103,7 @@ const purposeRedirectMap = {
 // ════════════════════════════════════════════════════
 const branchSelect      = document.getElementById("branch");
 const nameSelect        = document.getElementById("studentName");
+console.log(branchSelect, nameSelect);
 const usnInput          = document.getElementById("usn");
 const phoneInput        = document.getElementById("phone");
 const emailInput        = document.getElementById("email");
@@ -292,20 +294,69 @@ function validateForm() {
   }
 }
 
-  // --- Batch ---
-
-cdocument.addEventListener("DOMContentLoaded", () => {
+ 
+// --- Batch ---
+window.onload = function () {
   const batchSelect = document.getElementById("batch");
 
-  const currentYear = new Date().getFullYear();
+  if (!batchSelect) {
+    console.error("Batch dropdown not found!");
+    return;
+  }
 
-  for (let i = 2020; i <= currentYear + 2; i++) {
+  const currentYear = new Date().getFullYear();
+  const startYear = 2020;
+  const duration = 4;
+
+  for (let i = startYear; i <= currentYear; i++) {
     let option = document.createElement("option");
-    option.value = i;
-    option.textContent = i;
+    option.value = `${i}-${i + duration}`;
+    option.textContent = `${i}-${i + duration}`;
     batchSelect.appendChild(option);
   }
-});
+
+  console.log("Batch loaded successfully");
+};
+
+
+// ✅ Validation function
+function validateForm() {
+  let isValid = true;
+
+  if (!branchSelect.value) {
+    fail("grp-branch", "err-branch", "Please select a branch.");
+    isValid = false;
+  }
+
+  if (!nameSelect.value) {
+    fail("grp-name", "err-name", "Please select your name.");
+    isValid = false;
+  }
+
+  if (!usnInput.value) {
+    fail("grp-usn", "err-usn", "USN could not be resolved.");
+    isValid = false;
+  }
+
+  const phoneRegex = /^\d{10}$/;
+  if (!phoneRegex.test(phoneInput.value)) {
+    fail("grp-phone", "err-phone", "Enter a valid phone number.");
+    isValid = false;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(emailInput.value.trim())) {
+    fail("grp-email", "err-email", "Enter a valid email.");
+    isValid = false;
+  }
+
+  if (!document.getElementById("purpose").value) {
+    fail("grp-purpose", "err-purpose", "Please select a purpose.");
+    isValid = false;
+  }
+
+  return isValid; // ✅ correct
+}
 
   // --- Branch ---
   if (!branchSelect.value) {
@@ -334,13 +385,13 @@ cdocument.addEventListener("DOMContentLoaded", () => {
     fail("grp-email", "err-email", "Enter a valid email address.");
   }
 
-  // --- Purpose ---
-  if (!document.getElementById("purpose").value) {
-    fail("grp-purpose", "err-purpose", "Please select a purpose.");
-  }
-
+  //--purpose--
+ if (!document.getElementById("purpose").value) { 
+  fail("grp-purpose", "err-purpose", "Please select a purpose.");
+      
+  
   return isValid;
-
+ }
 
 // ════════════════════════════════════════════════════
 //  12. HELPER: clear error state from a form group

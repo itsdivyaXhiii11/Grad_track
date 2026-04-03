@@ -9,11 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css"/>
 
   <style>
     /* ── Reset & Base ─────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /*
     :root {
       --bg:         #f5f3ee;
       --surface:    #ffffff;
@@ -29,7 +30,8 @@
       --error-lt:   #fdf0ee;
       --radius:     10px;
       --shadow:     0 2px 16px rgba(0,0,0,.07);
-    }
+    }*/
+    
 
     html, body {
       min-height: 100%;
@@ -460,24 +462,29 @@
           <div class="invalid-feedback" id="collegeName-error">Please enter the college name.</div>
         </div>
 
-        <!-- Field of Study -->
         <div class="form-group">
           <label for="fieldOfStudy">Field of Study <span class="req">*</span></label>
-          <select id="fieldOfStudy" name="fieldOfStudy" class="form-select" required>
-            <option value="" disabled selected>— Select a field —</option>
-            <option value="Software Engineering">Software Engineering</option>
-            <option value="Artificial Intelligence">Artificial Intelligence</option>
-            <option value="Data Science">Data Science</option>
-            <option value="Cyber Security">Cyber Security</option>
-            <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
-            <option value="Cloud Computing">Cloud Computing</option>
-            <option value="Machine Learning">Machine Learning</option>
-            <option value="Robotics">Robotics</option>
-            <option value="Information Systems">Information Systems</option>
-            <option value="Embedded Systems">Embedded Systems</option>
-            <option value="Other">Other (please specify)</option>
-          </select>
-          <div class="invalid-feedback" id="fieldOfStudy-error">Please select a field of study.</div>
+
+          <input list="fields" id="fieldOfStudy" name="fieldOfStudy" 
+            class="form-control" placeholder="Select or type your field" required>
+
+          <datalist id="fields">
+            <option value="Software Engineering">
+            <option value="Artificial Intelligence">
+            <option value="Data Science">
+            <option value="Cyber Security">
+            <option value="Internet of Things (IoT)">
+            <option value="Cloud Computing">
+            <option value="Machine Learning">
+            <option value="Robotics">
+            <option value="Information Systems">
+            <option value="Embedded Systems">
+          </datalist>
+
+          <div class="invalid-feedback">
+            Please select or enter a field of study.
+          </div>
+        </div>
 
           <!-- Other — custom field -->
           <div class="custom-field-wrap" id="customFieldWrap">

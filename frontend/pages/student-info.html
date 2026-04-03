@@ -7,9 +7,11 @@
 
   <!-- Google Fonts: Sora (headings) + DM Sans (body) -->
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css" />
 
   <style>
     /* ─── CSS Variables ─────────────────────────────── */
+    /*
     :root {
         --bg:        #f4f6fb;
         --surface:   #ffffff;
@@ -23,7 +25,7 @@
         --radius:    12px;
         --font-head: 'Syne', sans-serif;
         --font-body: 'DM Sans', sans-serif;
-    }
+    }*/
     /* ─── Reset & Base ──────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -234,13 +236,13 @@
     </div>
 
     <!-- Form -->
-    <form id="studentForm" novalidate>
+    <form id="studentForm" novalidate onsubmit="return validateForm()">
       <div class="form-grid">
 
         <!-- Batch -->
         <div class="col-sm-6">
             <label class="form-label">Batch</label>
-            <select class="form-select" id="batch" required>
+            <select class="form-select" id="batch" name="batch" required>
                 <option value="" disabled selected>Select your batch</option>
             </select>
                     
@@ -251,8 +253,14 @@
         <div class="form-group" id="grp-branch">
           <label for="branch">Branch <span class="req">*</span></label>
           <div class="select-wrap">
-            <select class="form-select" id="batch" required>
-                <option value="">Select Batch</option>
+            <select class="form-select" id="branch" required>
+              <option value="">Select branch</option>
+              <option value="CSE">CSE</option>
+              <option value="ISE">ISE</option>
+              <option value="AIML">AIML</option>
+              <option value="AIDS">AIDS</option>
+              <option value="ECE">ECE</option>
+              <option value="EEE">EEE</option>
             </select>
           </div>
           <span class="error-msg" id="err-branch">Please select a branch.</span>
@@ -315,7 +323,7 @@
   <div class="toast" id="toast">✓ Details saved! Redirecting…</div>
 
   <!-- Link to the external JS file -->
-  <script src="./student-info.js"></script>
+  <script src="../js/student-info.js"></script>
 
 </body>
 </html>

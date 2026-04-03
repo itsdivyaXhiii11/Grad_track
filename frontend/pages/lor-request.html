@@ -59,6 +59,12 @@
                     <div class="invalid-feedback">Please select a faculty member.</div>
                   </div>
 
+                    <!-- File Upload -->
+                  <div class="mb-3">
+                    <label for="file" class="form-label-1">Upload LOR (PDF, DOC, DOCX only)</label>
+                    <input type="file" id="file1" class="form-control-1" accept=".pdf,.doc,.docx" required>
+                  </div>
+
                   <!--university name-->
                   <div class="mb-3">
                     <label for="university" class="form-label">University Name</label>
@@ -91,10 +97,10 @@
                     </select>
                   </div>
 
-                  <!-- File Upload -->
+                  <!-- File Upload 2-->
                   <div class="mb-3">
-                    <label for="file" class="form-label">Upload File (PDF, DOC, DOCX only)</label>
-                    <input type="file" id="file" class="form-control" accept=".pdf,.doc,.docx" required>
+                    <label for="file" class="form-label-2">Upload proof(eg.ID card or Admission letter) (PDF, DOC, DOCX only)</label>
+                    <input type="file" id="file2" class="form-control-2" accept=".pdf,.doc,.docx" required>
                   </div>
                 
                  
@@ -102,6 +108,7 @@
                   
 
                 <!-- Conditional: Abroad Fields -->
+                 <!--university-->
                 <div id="abroadSection" class="d-none">
                   <div class="form-section-title">Abroad Application Details</div>
                   <div class="row g-3">
@@ -110,14 +117,17 @@
                       <input type="text" class="form-control" id="lorUniversity"
                              placeholder="e.g. TU Berlin" />
                     </div>
+                    <!--country-->
                     <div class="col-sm-6">
                       <label for="lorCountry" class="form-label">Country</label>
                       <input type="text" class="form-control" id="lorCountry" placeholder="e.g. Germany" />
                     </div>
+                    <!--course-->
                     <div class="col-sm-6">
                       <label for="lorProgram" class="form-label">Program Name</label>
                       <input type="text" class="form-control" id="lorProgram" placeholder="e.g. MSc Computer Science" />
                     </div>
+                    <!--timeline-->
                     <div class="col-sm-6">
                       <label for="lorDeadline" class="form-label">Application Deadline</label>
                       <input type="date" class="form-control" id="lorDeadline" />

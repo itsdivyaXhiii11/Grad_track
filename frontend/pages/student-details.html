@@ -26,53 +26,6 @@
 
     <form id="studentForm" novalidate>
 
-      <!-- Batch -->
-      <div class="mb-3">
-        <label for="batch" class="form-label">Batch</label>
-
-        <select class="form-select" id="lorName" required>
-          <option value="" disabled selected>Select batch</option>
-        </select>
-
-        <div class="invalid-feedback">Please select batch.</div>
-      </div>
-    
-      <!-- Branch -->
-      <div class="mb-3">
-        <label class="form-label">Branch</label>
-        <select class="form-select" id="branch" required>
-          <option value="" disabled selected>Select your branch</option>
-          <option value="CSE">CSE</option>
-          <option value="ISE">ISE</option>
-          <option value="ECE">ECE</option>
-          <option value="AIML">AIML</option>
-           <option value="AIDS">AIDS</option>
-            <option value="EEE">EEE</option>
-        </select>
-        <div class="invalid-feedback">Please select branch.</div>
-      </div>
-
-      <!--Name-->
-      <div class="col-sm-6">
-        <label for="lorName" class="form-label">
-          Full Name <span class="text-danger">*</span>
-        </label>
-
-        <select class="form-select" id="batch" required>
-          <option value="" disabled selected>Select your Name</option>
-        </select>
-
-        <div class="invalid-feedback">Full name is required.</div>
-      </div>
-                  
-      <!--USN-->
-      <div class="col-sm-6">
-        <label for="lorUSN" class="form-label">USN <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" id="lorUSN" readonly />
-                    
-        <div class="invalid-feedback">Enter a valid USN (e.g. CS21B1001).</div>
-      </div>
-
       <!-- Option -->
       <div class="mb-3">
         <label class="form-label">Current Status</label>
@@ -89,6 +42,27 @@
 
         <div class="invalid-feedback">Please select an option.</div>
       </div>
+      <!--company-->
+      <div class="mb-3">
+        <label class="form-label">company/university name</label>
+        <input type="text" id="info" class="form-control" required placeholder="Enter company/university name">
+      </div>
+
+      <!-- Country Dropdown -->
+      <div class="mb-3">
+        <label class="form-label">Country</label>
+        <select id="country" class="form-control" required onchange="handleCountryChange()">
+          <option value="">Select Country</option>
+          <option value="India">India</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <!-- Input field (hidden by default) -->
+      <div class="mb-3" id="otherCountryDiv" style="display: none;">
+        <label class="form-label">Enter Country</label>
+        <input type="text" id="otherCountry" class="form-control" placeholder="Enter your country">
+      </div>
 
       <button type="submit" class="btn btn-primary w-100 mt-2">
         <i class="bi bi-arrow-right-circle me-1"></i>Submit
@@ -103,7 +77,20 @@
 <!-- your other scripts -->
 <script src="../js/api.js"></script>
 <script src="../js/student-dashboard.js"></script>
+<script>
+  function handleCountryChange() {
+    const country = document.getElementById("country").value;
+    const otherDiv = document.getElementById("otherCountryDiv");
 
+    if (country === "Other") {
+      otherDiv.style.display = "block";
+      document.getElementById("otherCountry").required = true;
+    } else {
+      otherDiv.style.display = "none";
+      document.getElementById("otherCountry").required = false;
+    }
+  }
+</script>
 
 
   

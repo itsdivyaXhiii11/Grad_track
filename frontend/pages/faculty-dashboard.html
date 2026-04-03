@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faculty Dashboard — LOR Portal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<div class="app-wrapper">
+  <div id="sidebar-placeholder"></div>
+
+  <div class="main-content">
+    <div id="navbar-placeholder"></div>
+
+    <div class="page-body">
+      <div class="page-header">
+        <h1>Faculty Dashboard</h1>
+        <p>Review and action LOR requests from your students.</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="bi bi-inbox"></i></div>
+            <div class="stat-value" id="fStatTotal">—</div>
+            <div class="stat-label">Total Received</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="stat-icon amber"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-value" id="fStatPending">—</div>
+            <div class="stat-label">Awaiting Review</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="stat-icon green"><i class="bi bi-check2-circle"></i></div>
+            <div class="stat-value" id="fStatApproved">—</div>
+            <div class="stat-label">Approved</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
+            <div class="stat-value" id="fStatRejected">—</div>
+            <div class="stat-label">Rejected</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="card mb-4">
+        <div class="card-body py-3">
+          <div class="row g-2">
+            <div class="col-sm-4">
+              <select class="form-select form-select-sm" id="fFilterStatus">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <input type="text" class="form-control form-control-sm" id="fSearchInput"
+                     placeholder="Search student name or USN…" />
+            </div>
+            <div class="col-sm-4">
+              <button class="btn btn-sm btn-outline-secondary w-100" id="fResetBtn">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Table -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <h2>Student LOR Requests</h2>
+          <span class="badge bg-secondary rounded-pill" id="fRequestCount">0</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Student Name</th>
+                <th>USN</th>
+                <th>Branch</th>
+                <th>Purpose</th>
+                <th>Abroad</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="fRequestsBody">
+              <tr><td colspan="9" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm me-2"></div>Loading…
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div id="footer-placeholder"></div>
+  </div>
+</div>
+
+<!-- Action Confirmation Modal -->
+<div class="modal fade" id="actionModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="actionModalTitle">Confirm Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="actionModalBody">
+        Are you sure you want to proceed?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-sm" id="actionModalConfirmBtn" onclick="confirmAction()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/student-dashboard.js"></script>
+<script src="../js/faculty-dashboard.js"></script>
+</body>
+</html>
