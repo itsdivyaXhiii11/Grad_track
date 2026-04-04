@@ -8,6 +8,7 @@
 
 /* ---------- CSS Variables ---------- */
 :root {
+/*
   --primary:        #1a56db;
   --primary-dark:   #1345b7;
   --primary-light:  #e8f0fe;
@@ -22,6 +23,23 @@
   --text-primary:   #0f172a;
   --text-secondary: #475569;
   --text-muted:     #94a3b8;
+  */
+   
+  --bg:         #f5f3ee;
+  --surface:    #ffffff;
+  --border:     #e0dbd2;
+  --ink:        #1a1714;
+  --ink-muted:  #6b6560;
+  --accent:     #2f5be7;
+  --accent-dk:  #1a3db5;
+  --accent-lt:  #eef1fd;
+  --success:    #1c7c4a;
+  --success-lt: #e8f7ef;
+  --error:      #c0392b;
+  --error-lt:   #fdf0ee;
+  --radius:     10px;
+  --shadow:     0 2px 16px rgba(0,0,0,.07);
+  
   --sidebar-w:      260px;
   --topbar-h:       64px;
   --radius:         12px;
@@ -486,14 +504,14 @@ a:hover { color: var(--primary-dark); }
 }
 
 .btn-primary {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
+
 .btn-primary:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
-  color: #fff;
+  background: var(--accent-dk);
+  border-color: var(--accent-dk);
 }
 
 .btn-success {

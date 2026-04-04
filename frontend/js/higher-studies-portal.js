@@ -1,23 +1,19 @@
-/**
- * higher-studies.js
- * Handles form validation and API submission for the Higher Studies page.
- * No framework dependencies — vanilla JS only.
- */
-
 "use strict";
 
 /* ─────────────────────────────────────────────
    Constants
 ───────────────────────────────────────────── */
 const API_ENDPOINT = "/api/higher-studies";
-const TOAST_DURATION = 4500; // ms
+const TOAST_DURATION = 4500;
 
 /* ─────────────────────────────────────────────
-   DOM References (populated on DOMContentLoaded)
+   DOM References
 ───────────────────────────────────────────── */
-let form, submitBtn, btnSpinner;
-let stateInput, collegeNameInput, fieldOfStudySelect;
+let form, submitBtn;
+let stateInput, collegeNameInput, fieldOfStudyInput;
 let customFieldWrap, customFieldInput;
+let fileInput;
+
 let toast, toastIcon, toastTitle, toastMsg;
 let toastTimer = null;
 
@@ -25,47 +21,42 @@ let toastTimer = null;
    Initialise
 ───────────────────────────────────────────── */
 document.addEventListener("DOMContentLoaded", () => {
-  // Cache elements
-  form               = document.getElementById("higher-studies-form");
-  submitBtn          = document.getElementById("submitBtn");
-  btnSpinner         = document.getElementById("btn-spinner");
+  form = document.getElementById("higher-studies-form");
+  submitBtn = document.getElementById("submitBtn");
 
-  stateInput         = document.getElementById("state");
-  collegeNameInput   = document.getElementById("collegeName");
-  fieldOfStudySelect = document.getElementById("fieldOfStudy");
-  customFieldWrap    = document.getElementById("customFieldWrap");
-  customFieldInput   = document.getElementById("customField");
+  stateInput = document.getElementById("state");
+  collegeNameInput = document.getElementById("collegeName");
+  fieldOfStudyInput = document.getElementById("fieldOfStudy");
 
-  toast              = document.getElementById("toast");
-  toastIcon          = document.getElementById("toast-icon");
-  toastTitle         = document.getElementById("toast-title");
-  toastMsg           = document.getElementById("toast-msg");
+  customFieldWrap = document.getElementById("customFieldWrap");
+  customFieldInput = document.getElementById("customField");
 
-  // Event: toggle custom field when "Other" is selected
-  fieldOfStudySelect.addEventListener("change", handleFieldChange);
+  fileInput = document.getElementById("file");
 
-  // Event: live validation — remove error state on input
-  [stateInput, collegeNameInput, customFieldInput].forEach((el) => {
+  toast = document.getElementById("toast");
+  toastIcon = document.getElementById("toast-icon");
+  toastTitle = document.getElementById("toast-title");
+  toastMsg = document.getElementById("toast-msg");
+
+  /* Events */
+  fieldOfStudyInput.addEventListener("input", handleFieldChange);
+
+  [stateInput, collegeNameInput, customFieldInput].forEach(el => {
     el.addEventListener("input", () => clearFieldError(el));
   });
-  fieldOfStudySelect.addEventListener("change", () =>
-    clearFieldError(fieldOfStudySelect)
-  );
 
-  // Event: form submission
   form.addEventListener("submit", handleSubmit);
 });
 
 /* ─────────────────────────────────────────────
-   Field-of-study toggle
+   Field Toggle
 ───────────────────────────────────────────── */
 function handleFieldChange() {
-  const isOther = fieldOfStudySelect.value === "Other";
+  const value = fieldOfStudyInput.value.trim().toLowerCase();
 
-  if (isOther) {
+  if (value === "other") {
     customFieldWrap.classList.add("visible");
     customFieldInput.required = true;
-    customFieldInput.focus();
   } else {
     customFieldWrap.classList.remove("visible");
     customFieldInput.required = false;
@@ -77,132 +68,107 @@ function handleFieldChange() {
 /* ─────────────────────────────────────────────
    Validation
 ───────────────────────────────────────────── */
-
-/**
- * Validates all form fields.
- * Returns true if valid, false otherwise.
- */
 function validateForm() {
   let isValid = true;
 
-  // State
   if (!stateInput.value.trim()) {
     showFieldError(stateInput, "state-error", "Please enter your state.");
     isValid = false;
   }
 
-  // College Name
   if (!collegeNameInput.value.trim()) {
-    showFieldError(
-      collegeNameInput,
-      "collegeName-error",
-      "Please enter the college / university name."
-    );
+    showFieldError(collegeNameInput, "collegeName-error", "Please enter college name.");
     isValid = false;
   }
 
-  // Field of Study
-  if (!fieldOfStudySelect.value) {
-    showFieldError(
-      fieldOfStudySelect,
-      "fieldOfStudy-error",
-      "Please select a field of study."
-    );
+  if (!fieldOfStudyInput.value.trim()) {
+    showFieldError(fieldOfStudyInput, "fieldOfStudy-error", "Please select a field.");
     isValid = false;
   }
 
-  // Custom field (only required when "Other" is chosen)
   if (
-    fieldOfStudySelect.value === "Other" &&
+    fieldOfStudyInput.value.trim().toLowerCase() === "other" &&
     !customFieldInput.value.trim()
   ) {
-    showFieldError(
-      customFieldInput,
-      "customField-error",
-      "Please specify your field of study."
-    );
+    showFieldError(customFieldInput, "customField-error", "Please specify your field.");
     isValid = false;
+  }
+
+  // File validation (optional but recommended)
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const allowedTypes = ["application/pdf", "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
+    if (!allowedTypes.includes(file.type)) {
+      showToast("error", "Invalid File", "Only PDF, DOC, DOCX allowed.");
+      isValid = false;
+    }
   }
 
   return isValid;
 }
 
-/**
- * Marks an input as invalid and shows its error message.
- * @param {HTMLElement} el      – The input / select element
- * @param {string}      errorId – ID of the error <div>
- * @param {string}      msg     – Error message text
- */
 function showFieldError(el, errorId, msg) {
   el.classList.add("is-invalid");
   const errorEl = document.getElementById(errorId);
   if (errorEl) errorEl.textContent = msg;
 }
 
-/**
- * Removes the invalid state from an input.
- * @param {HTMLElement} el
- */
 function clearFieldError(el) {
   el.classList.remove("is-invalid");
 }
 
 /* ─────────────────────────────────────────────
-   Form Submission
+   Submit
 ───────────────────────────────────────────── */
-async function handleSubmit(event) {
-  event.preventDefault();
+async function handleSubmit(e) {
+  e.preventDefault();
 
   if (!validateForm()) return;
 
-  // Determine final field value
   const resolvedField =
-    fieldOfStudySelect.value === "Other"
+    fieldOfStudyInput.value.trim().toLowerCase() === "other"
       ? customFieldInput.value.trim()
-      : fieldOfStudySelect.value;
+      : fieldOfStudyInput.value.trim();
 
-  const payload = {
-    state:       stateInput.value.trim(),
-    collegeName: collegeNameInput.value.trim(),
-    field:       resolvedField,
-  };
+  /* FormData for backend */
+  const formData = new FormData();
+  formData.append("state", stateInput.value.trim());
+  formData.append("collegeName", collegeNameInput.value.trim());
+  formData.append("field", resolvedField);
+
+  // Optional: attach userId if stored
+  const userId = localStorage.getItem("userId");
+  if (userId) formData.append("userId", userId);
+
+  // File
+  if (fileInput.files.length > 0) {
+    formData.append("file", fileInput.files[0]);
+  }
 
   setLoading(true);
 
   try {
-    const response = await fetch(API_ENDPOINT, {
+    const res = await fetch(API_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: formData
     });
 
-    if (!response.ok) {
-      // Attempt to read an error message from the API response body
-      let apiMessage = `Server responded with status ${response.status}.`;
+    if (!res.ok) {
+      let msg = "Something went wrong";
       try {
-        const errData = await response.json();
-        if (errData && errData.message) apiMessage = errData.message;
-      } catch (_) {
-        // ignore JSON parse errors
-      }
-      throw new Error(apiMessage);
+        const data = await res.json();
+        msg = data.message || msg;
+      } catch {}
+      throw new Error(msg);
     }
 
-    // Success path
-    showToast(
-      "success",
-      "Application Submitted",
-      "Your higher studies details have been recorded successfully."
-    );
+    showToast("success", "Submitted", "Details saved successfully.");
     resetForm();
 
   } catch (err) {
-    // Network error or non-OK response
-    showToast(
-      "error",
-      "Submission Failed",
-      err.message || "Unable to reach the server. Please try again."
-    );
+    showToast("error", "Error", err.message);
   } finally {
     setLoading(false);
   }
@@ -211,57 +177,30 @@ async function handleSubmit(event) {
 /* ─────────────────────────────────────────────
    UI Helpers
 ───────────────────────────────────────────── */
-
-/**
- * Toggles the loading/spinner state of the submit button.
- * @param {boolean} loading
- */
 function setLoading(loading) {
   submitBtn.disabled = loading;
-  if (loading) {
-    submitBtn.classList.add("loading");
-  } else {
-    submitBtn.classList.remove("loading");
-  }
+  submitBtn.classList.toggle("loading", loading);
 }
 
-/**
- * Resets the form back to its initial state.
- */
 function resetForm() {
   form.reset();
 
-  // Remove any lingering invalid classes
-  [stateInput, collegeNameInput, fieldOfStudySelect, customFieldInput].forEach(
-    (el) => el.classList.remove("is-invalid")
-  );
+  [stateInput, collegeNameInput, fieldOfStudyInput, customFieldInput]
+    .forEach(el => el.classList.remove("is-invalid"));
 
-  // Hide custom field
   customFieldWrap.classList.remove("visible");
-  customFieldInput.required = false;
 }
 
-/**
- * Displays a toast notification.
- * @param {"success"|"error"} type
- * @param {string}            title
- * @param {string}            message
- */
+/* ─────────────────────────────────────────────
+   Toast
+───────────────────────────────────────────── */
 function showToast(type, title, message) {
-  // Clear any existing timer
-  if (toastTimer) {
-    clearTimeout(toastTimer);
-    toast.classList.remove("show");
-  }
+  if (toastTimer) clearTimeout(toastTimer);
 
-  // Set content
-  toast.className = `${type}`; // reset classes then add type
+  toast.className = type;
   toastTitle.textContent = title;
-  toastMsg.textContent   = message;
-  toastIcon.textContent  = type === "success" ? "✓" : "✕";
-
-  // Force reflow so transition fires even on rapid successive calls
-  void toast.offsetWidth;
+  toastMsg.textContent = message;
+  toastIcon.textContent = type === "success" ? "✓" : "✕";
 
   toast.classList.add("show");
 

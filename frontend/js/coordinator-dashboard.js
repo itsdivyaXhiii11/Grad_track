@@ -1,5 +1,5 @@
 /**
- * coordinator-dashboard.js — Admin/Coordinator overview of all LOR requests
+ * coordinator-dashboard.js — Coordinator Dashboard (FINAL CLEAN VERSION)
  */
 
 let cAllRequests = [];
@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAllRequests();
   setupFilters();
 });
+
+/* ========================= LOAD DATA ========================= */
 
 async function loadAllRequests() {
   try {
@@ -27,81 +29,123 @@ async function loadAllRequests() {
 
     if (statsRes.success) {
       const s = statsRes.data;
-      document.getElementById('cStatTotal').textContent    = s.total;
-      document.getElementById('cStatApproved').textContent = s.approved;
-      document.getElementById('cStatPending').textContent  = s.pending;
-      document.getElementById('cStatRejected').textContent = s.rejected;
-      document.getElementById('cStatSent').textContent     = s.sent;
+
+      document.getElementById('cStatTotal').textContent     = s.total;
+      document.getElementById('cStatApproved').textContent  = s.approved;
+      document.getElementById('cStatPending').textContent   = s.pending;
+      document.getElementById('cStatRejected').textContent  = s.rejected;
+      document.getElementById('cStatSent').textContent      = s.sent;
       document.getElementById('cStatThisMonth').textContent = s.thisMonth;
-      const abroad = cAllRequests.filter(r => r.abroad).length;
-      document.getElementById('cStatAbroad').textContent   = abroad;
+
+      const abroadCount = cAllRequests.filter(r => r.country).length;
+      document.getElementById('cStatAbroad').textContent = abroadCount;
     }
+
   } catch (err) {
     document.getElementById('cRequestsBody').innerHTML =
-      '<tr><td colspan="10" class="text-center text-danger py-4">Failed to load data.</td></tr>';
+      '<tr><td colspan="11" class="text-center text-danger py-4">Failed to load data.</td></tr>';
     console.error(err);
   }
 }
+
+/* ========================= RENDER TABLE ========================= */
 
 function renderTable(data) {
   const tbody = document.getElementById('cRequestsBody');
   document.getElementById('cRequestCount').textContent = data.length;
 
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">No requests match filters.</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="11" class="text-center text-muted py-4">No requests found.</td></tr>';
     return;
   }
 
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td class="fw-700">#${r.id}</td>
+      <td>#${r.id}</td>
+      <td>${r.batch || '—'}</td>
       <td>${r.studentName}</td>
-      <td><code style="font-size:.8rem;">${r.usn}</code></td>
       <td>${r.branch}</td>
-      <td>${r.faculty}</td>
-      <td>${r.purpose}</td>
-      <td class="text-center">${r.abroad
-        ? '<i class="bi bi-check-circle-fill text-success"></i>'
-        : '<i class="bi bi-dash text-muted"></i>'}</td>
+      <td><code>${r.usn}</code></td>
+      <td>${r.faculty1}</td>
+      <td>${r.faculty2}</td>
+      <td>${r.country || '—'}</td>
       <td>${formatDate(r.submittedAt)}</td>
-      <td><span class="badge-status badge-${r.status}">${capitalize(r.status)}</span></td>
+
+      <!-- STATUS -->
+      <td>
+        <span class="badge-status badge-${r.status}">
+          ${capitalize(r.status)}
+        </span>
+      </td>
+
+      <!-- LOR FILE (VIEW + DOWNLOAD + SEND) -->
       <td>
         ${
-            r.status === "pending"
-                ? `
-                    <button class="btn btn-sm btn-success me-1"
-                        onclick="openActionModal(${r.id}, 'approved')">
-                        Approve
-                    </button>
+          r.lorFile
+            ? `
+              <div class="d-flex gap-2 flex-wrap">
 
-                    <button class="btn btn-sm btn-danger"
-                        onclick="openActionModal(${r.id}, 'rejected')">
-                        Reject
-                     </button>
-                `
-                : `<span class="text-muted">No Action</span>`
+                <!-- VIEW -->
+                <a href="${r.lorFile}" target="_blank"
+                   class="btn btn-sm btn-outline-secondary"
+                   title="View LOR">
+                  <i class="bi bi-eye"></i>
+                </a>
+
+                <!-- DOWNLOAD -->
+                <a href="${r.lorFile}" download
+                   class="btn btn-sm btn-outline-primary"
+                   title="Download LOR">
+                  <i class="bi bi-download"></i>
+                </a>
+
+                <!-- SEND BUTTON -->
+                ${
+                  r.status === "approved"
+                    ? `
+                      <button class="btn btn-sm btn-success"
+                              onclick="markAsSent(${r.id})"
+                              title="Mark as Sent">
+                        Send
+                      </button>
+                    `
+                    : ''
+                }
+
+              </div>
+            `
+            : `<span class="text-muted">No File</span>`
         }
       </td>
     </tr>
   `).join('');
 }
 
-/** Update a request's status from dropdown */
-async function updateStatus(id, newStatus) {
-  if (!newStatus) return;
+/* ========================= MARK AS SENT ========================= */
+
+async function markAsSent(id) {
+  if (!confirm("Are you sure you want to mark this as Sent to University?")) return;
+
   try {
-    const res = await apiCall(`/lor/${id}/status`, 'PUT', { status: newStatus });
+    const res = await apiCall(`/lor/${id}/send`, 'PUT');
+
     if (res.success) {
-      cAllRequests = cAllRequests.map(r => r.id === id ? { ...r, status: newStatus } : r);
+      cAllRequests = cAllRequests.map(r =>
+        r.id === id ? { ...r, status: 'sent' } : r
+      );
       renderTable(cAllRequests);
     } else {
-      alert('Update failed: ' + res.message);
+      alert('Failed to update status');
     }
+
   } catch (err) {
-    alert('Error: Could not update status.');
     console.error(err);
+    alert('Error updating status');
   }
 }
+
+/* ========================= FILTERS ========================= */
 
 function setupFilters() {
   const statusFilter = document.getElementById('cFilterStatus');
@@ -111,20 +155,32 @@ function setupFilters() {
 
   const applyFilters = () => {
     let filtered = [...cAllRequests];
-    if (statusFilter.value) filtered = filtered.filter(r => r.status === statusFilter.value);
-    if (branchFilter.value) filtered = filtered.filter(r => r.branch === branchFilter.value);
+
+    if (statusFilter.value) {
+      filtered = filtered.filter(r => r.status === statusFilter.value);
+    }
+
+    if (branchFilter.value) {
+      filtered = filtered.filter(r => r.branch === branchFilter.value);
+    }
+
     const q = searchInput.value.trim().toLowerCase();
-    if (q) filtered = filtered.filter(r =>
-      r.studentName.toLowerCase().includes(q) ||
-      r.usn.toLowerCase().includes(q) ||
-      r.faculty.toLowerCase().includes(q)
-    );
+
+    if (q) {
+      filtered = filtered.filter(r =>
+        r.studentName.toLowerCase().includes(q) ||
+        r.usn.toLowerCase().includes(q) ||
+        r.faculty1.toLowerCase().includes(q) ||
+        r.faculty2.toLowerCase().includes(q)
+      );
+    }
+
     renderTable(filtered);
   };
 
   statusFilter.addEventListener('change', applyFilters);
   branchFilter.addEventListener('change', applyFilters);
-  searchInput.addEventListener('input',   applyFilters);
+  searchInput.addEventListener('input', applyFilters);
 
   resetBtn.addEventListener('click', () => {
     statusFilter.value = '';
@@ -134,26 +190,57 @@ function setupFilters() {
   });
 }
 
-/** Export visible table rows as CSV */
+/* ========================= EXPORT CSV ========================= */
+
 function exportCSV() {
-  const headers = ['ID', 'Student', 'USN', 'Branch', 'Faculty', 'Purpose', 'Abroad', 'Submitted', 'Status'];
+  const headers = [
+    'ID','Batch','Student','USN','Branch',
+    'Faculty1','Faculty2','Country',
+    'Submitted','Status','LOR File'
+  ];
+
   const rows = cAllRequests.map(r => [
-    r.id, r.studentName, r.usn, r.branch, r.faculty, r.purpose,
-    r.abroad ? 'Yes' : 'No', r.submittedAt, r.status
+    r.id,
+    r.batch,
+    r.studentName,
+    r.usn,
+    r.branch,
+    r.faculty1,
+    r.faculty2,
+    r.country,
+    r.submittedAt,
+    r.status,
+    r.lorFile
+      ? `=HYPERLINK("${r.lorFile}", "View LOR")`
+      : 'No File'
   ]);
 
-  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const csv = [headers, ...rows]
+    .map(row => row.join(','))
+    .join('\n');
+
   const blob = new Blob([csv], { type: 'text/csv' });
   const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'lor_requests_export.csv';
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lor_requests.csv';
   a.click();
+
   URL.revokeObjectURL(url);
 }
 
+/* ========================= HELPERS ========================= */
+
 function formatDate(d) {
   if (!d) return '—';
-  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  return new Date(d).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
 }
-function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function capitalize(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+}

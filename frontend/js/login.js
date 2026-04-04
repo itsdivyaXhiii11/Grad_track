@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
   togglePwd.addEventListener('click', () => {
     const isText = pwdField.type === 'text';
     pwdField.type = isText ? 'password' : 'text';
-    togglePwd.querySelector('i').className = isText ? 'bi bi-eye text-muted' : 'bi bi-eye-slash text-muted';
+    togglePwd.querySelector('i').className = isText
+      ? 'bi bi-eye text-muted'
+      : 'bi bi-eye-slash text-muted';
   });
 
   // --- Form submit ---
@@ -37,13 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await apiCall('/auth/login', 'POST', { email, password, role });
 
       if (res.success) {
-        // Save session
+        // ✅ Save session
         saveSession(res.token, res.user);
+
         showAlert('Login successful! Redirecting…', 'success');
+
+        // ✅ Redirect after short delay
         setTimeout(() => redirectByRole(res.user.role), 800);
+
       } else {
         showAlert(res.message || 'Login failed. Please try again.', 'danger');
       }
+
     } catch (err) {
       showAlert('An error occurred. Please try again.', 'danger');
       console.error(err);
@@ -66,5 +73,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function hideAlert() {
     alertBox.className = 'alert d-none';
+  }
+
+  // ✅ NEW: Save session
+  function saveSession(token, user) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', user.role);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  // ✅ NEW: Role-based redirect
+  function redirectByRole(role) {
+    if (role === 'student') {
+      window.location.href = 'student-info.html';
+    } 
+    else if (role === 'faculty') {
+      window.location.href = 'faculty-dashboard.html';
+    } 
+    else if (role === 'admin' || role === 'coordinator') {
+      window.location.href = 'coordinator-dashboard.html';
+    } 
+    else {
+      window.location.href = 'login.html';
+    }
   }
 });
