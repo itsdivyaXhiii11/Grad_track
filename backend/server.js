@@ -1,39 +1,32 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const connectDB = require("./db");
+const db = require("./db");
+
 const lorRoutes = require("./routes/lorRoutes");
+const authRoutes = require("./routes/authRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 
 dotenv.config({ path: "../.env" });
-const PORT = process.env.PORT || 3001;
 
 const app = express();
-const startServer = async () => {
-  try {
-    await connectDB();
+const PORT = process.env.PORT || 3001;
 
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-
-  } catch (error) {
-    console.error("Server failed to start:", error);
-  }
-};
-
-startServer();
-
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-app.use("/api", lorRoutes);
+// Routes
+app.use("/api/lor", lorRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api", studentRoutes);
 
+// Test route
 app.get("/", (req, res) => {
-  res.send("GradTrack Backend Running 🚀");
+  res.send("GradTrack Backend Running ");
 });
 
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
-
-
-
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
