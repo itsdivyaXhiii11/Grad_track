@@ -267,15 +267,15 @@
         </div>
 
         <!-- Name (dynamic) -->
-        <div class="form-group full" id="grp-name">
-          <label for="studentName">Name <span class="req">*</span></label>
+         <div class="form-group full" id="grp-name">
+          <label for="studentSelect">Name <span class="req">*</span></label>
           <div class="select-wrap">
-            <select id="studentName" name="studentName">
-              <option value="">Select Branch First</option>
+            <select id="studentName" name="studentSelect" required>
+              <option value="">Select Student</option>
             </select>
+            </div>
+            <span class="error-msg" id="err-name">Please select your name.</span>
           </div>
-          <span class="error-msg" id="err-name">Please select your name.</span>
-        </div>
 
         <!-- USN (auto-filled) -->
         <div class="form-group full" id="grp-usn">

@@ -19,11 +19,28 @@ exports.createStudent = (req, res) => {
 
 // GET ALL STUDENTS
 exports.getStudents = (req, res) => {
-  db.query("SELECT * FROM students", (err, results) => {
+  const { batch, branch } = req.query;
+
+    console.log("Query params:", batch, branch);
+
+  let query = "SELECT id, name, usn FROM students WHERE 1=1";
+  let values = [];
+
+  if (batch) {
+    query += " AND batch_year = ?";
+    values.push(batch);
+  }
+
+  if (branch) {
+    query += " AND branch = ?";
+    values.push(branch);
+  }
+
+  db.query(query, values, (err, results) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    res.json(results);
+    res.status(200).json(results);
   });
 };
 

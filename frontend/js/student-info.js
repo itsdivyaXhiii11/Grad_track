@@ -12,7 +12,7 @@ const purposeRedirectMap = {
 // ════════════════════════════════════════════════════
 (async function checkRole() {
   try {
-    const response = await fetch("/api/auth/me", {
+    const response = await fetch("http://localhost:3001/api/auth/me", {
       method: "GET",
       credentials: "include"
     });
@@ -49,7 +49,7 @@ const toast = document.getElementById("toast");
 // ════════════════════════════════════════════════════
 window.addEventListener("DOMContentLoaded", () => {
   const currentYear = new Date().getFullYear();
-  const startYear = 2020;
+  const startYear = 2016;
   const duration = 4;
 
   for (let i = startYear; i <= currentYear; i++) {
@@ -65,23 +65,29 @@ window.addEventListener("DOMContentLoaded", () => {
 // ════════════════════════════════════════════════════
 async function fetchStudents(batch, branch) {
   try {
-    const res = await fetch(`/api/students?batch=${batch}&branch=${branch}`);
+    const res = await fetch(`http://localhost:3001/api/students?batch=${batch}&branch=${branch}`);
 
     if (!res.ok) throw new Error("Failed to fetch");
 
-    return await res.json(); // [{id, name, usn}]
+    const students = await res.json();
+
+    console.log("Filtered students from backend:", students);
+
+    return students; 
   } catch (err) {
     console.error("Fetch error:", err);
     return [];
   }
 }
-
 // ════════════════════════════════════════════════════
 // 6. LOAD STUDENTS
 // ════════════════════════════════════════════════════
 async function loadStudents() {
   const batch = batchSelect.value;
   const branch = branchSelect.value;
+
+  console.log("Batch:", batch);
+  console.log("Branch:", branch);
 
   nameSelect.innerHTML = '<option value="">Select Name</option>';
   usnInput.value = "";
@@ -240,3 +246,4 @@ function showToast() {
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 3000);
 }
+

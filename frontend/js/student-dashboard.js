@@ -188,3 +188,9 @@ function formatDate(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
+
+// Temporary placeholder until LOR stats API is ready
+document.getElementById("statTotal").innerText = "—";
+document.getElementById("statApproved").innerText = "—";
+document.getElementById("statPending").innerText = "—";
+document.getElementById("statRejected").innerText = "—";
