@@ -1,4 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
+//const facultyInput1 = document.getElementById("lorFaculty1");
+//const facultyInput2 = document.getElementById("lorFaculty2");
+let facultyInput1;
+let facultyInput2;
+let facultyList1;
+let facultyList2;
+
+let facultyData = [];
+//document.addEventListener("DOMContentLoaded", () => {
 
   // ================================
   // ELEMENT REFERENCES
@@ -19,9 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================================
   // FETCH FACULTY LIST FROM BACKEND
   // ================================
-  async function fetchFacultyList() {
+/*  async function fetchFacultyList() {
     try {
-      const response = await fetch("/api/faculty");
+      const response = await fetch("http://localhost:3001/api/faculty");
 
       if (!response.ok) throw new Error("Failed to fetch faculty");
 
@@ -34,10 +42,63 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(error);
       showAlert("danger", "Unable to load faculty list. Try again later.");
     }
+  } 
+*/
+  //to fetch
+async function loadFaculty() {
+  try {
+    const res = await fetch("http://localhost:3001/api/faculty");
+    facultyData = await res.json();
+
+    console.log("Faculty:", facultyData);
+
+    populateDropdowns();
+  } catch (err) {
+    console.error("Error loading faculty:", err);
   }
+}
+
+function populateDropdowns() {
+  facultyList1.innerHTML = "";
+  facultyList2.innerHTML = "";
+
+  facultyData.forEach(f => {
+    let opt1 = document.createElement("option");
+    opt1.value = f.name;
+    facultyList1.appendChild(opt1);
+
+    let opt2 = document.createElement("option");
+    opt2.value = f.name;
+    facultyList2.appendChild(opt2);
+  });
+}
+
+function filterFaculty() {
+  const selected1 = facultyInput1.value;
+  const selected2 = facultyInput2.value;
+
+  facultyList1.innerHTML = "";
+  facultyList2.innerHTML = "";
+
+  facultyData.forEach(f => {
+
+    if (f.name !== selected2) {
+      let opt1 = document.createElement("option");
+      opt1.value = f.name;
+      facultyList1.appendChild(opt1);
+    }
+
+    if (f.name !== selected1) {
+      let opt2 = document.createElement("option");
+      opt2.value = f.name;
+      facultyList2.appendChild(opt2);
+    }
+
+  });
+}
 
 
-  function populateDropdown(selectElement, facultyList) {
+/*  function populateDropdown(selectElement, facultyList) {
     selectElement.innerHTML = `<option value="">Select Faculty</option>`;
 
     facultyList.forEach(faculty => {
@@ -51,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
+*/
   // ================================
   // VALIDATION
   // ================================
@@ -166,6 +227,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================================
   // INIT
   // ================================
-  fetchFacultyList();
+  //fetchFacultyList();
+
+//});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  facultyInput1 = document.getElementById("lorFaculty1");
+  facultyInput2 = document.getElementById("lorFaculty2");
+
+  facultyList1 = document.getElementById("facultyList1");
+  facultyList2 = document.getElementById("facultyList2");
+
+  facultyInput1.addEventListener("input", filterFaculty);
+  facultyInput2.addEventListener("input", filterFaculty);
+
+  loadFaculty(); 
 
 });

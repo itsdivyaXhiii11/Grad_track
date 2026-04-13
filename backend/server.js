@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const db = require("./db");
 
+const facultyRoutes = require("./routes/facultyRoutes");
 const lorRoutes = require("./routes/lorRoutes");
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
@@ -20,6 +21,7 @@ app.use(cors());
 app.use("/api/lor", lorRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api", studentRoutes);
+app.use("/api/faculty", facultyRoutes);
 
 // Test route
 app.get("/", (req, res) => {
