@@ -1,7 +1,6 @@
 /**
  * coordinator-dashboard.js — Coordinator Dashboard (FINAL CLEAN VERSION)
  */
-
 let cAllRequests = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,6 +10,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   await injectComponents('Coordinator Dashboard');
   await loadAllRequests();
   setupFilters();
+
+  const viewSelector = document.getElementById("viewSelector");
+  const lorSection = document.getElementById("lorSection");
+  const studentsSection = document.getElementById("studentsSection");
+
+  viewSelector.addEventListener("change", () => {
+    if (viewSelector.value === "lor") {
+      lorSection.classList.remove("d-none");
+      studentsSection.classList.add("d-none");
+    } else {
+      lorSection.classList.add("d-none");
+      studentsSection.classList.remove("d-none");
+
+      loadStudents();
+    }
+  });
 });
 
 /* ========================= LOAD DATA ========================= */
@@ -35,7 +50,7 @@ async function loadAllRequests() {
       document.getElementById('cStatPending').textContent   = s.pending;
       document.getElementById('cStatRejected').textContent  = s.rejected;
       document.getElementById('cStatSent').textContent      = s.sent;
-      document.getElementById('cStatThisMonth').textContent = s.thisMonth;
+     
 
       const abroadCount = cAllRequests.filter(r => r.country).length;
       document.getElementById('cStatAbroad').textContent = abroadCount;
