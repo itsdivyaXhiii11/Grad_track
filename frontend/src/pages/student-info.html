@@ -236,7 +236,7 @@
     </div>
 
     <!-- Form -->
-    <form id="studentForm" novalidate onsubmit="return validateForm()">
+    <form id="studentForm" novalidate>
       <div class="form-grid">
 
         <!-- Batch -->
@@ -246,7 +246,7 @@
                 <option value="" disabled selected>Select your batch</option>
             </select>
                     
-            <div class="invalid-feedback">Please select batch.</div>
+          
         </div>
 
         <!-- Branch -->
@@ -323,7 +323,6 @@
   <div class="toast" id="toast">✓ Details saved! Redirecting…</div>
 
   <!-- Link to the external JS file -->
-  <script src="../js/student-info.js"></script>
-
+  <script type="module" src="../js/student-info.js"></script>
 </body>
 </html>

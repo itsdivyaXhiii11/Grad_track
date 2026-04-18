@@ -1,58 +1,44 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const db = require("../db");
 
-// 🔐 LOGIN ROUTE
-router.post("/login", async (req, res) => {
+// LOGIN ROUTE (MySQL)
+router.post("/login", (req, res) => {
   const { email, password, role } = req.body;
 
-  try {
-    // 1️⃣ Find user
-    const user = await User.findOne({ email });
+  const query = "SELECT * FROM users WHERE email = ?";
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
+  db.query(query, [email], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "DB error" });
     }
 
-    // 2️⃣ Check password
-    const isMatch = await user.matchPassword(password);
-
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid password",
-      });
+    if (results.length === 0) {
+      return res.status(401).json({ message: "User not found" });
     }
 
-    // 3️⃣ Optional: check role
+    const user = results[0];
+
+    // ⚠️ Plain password check (for now)
+    if (password !== user.password) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    // Role check
     if (role && user.role !== role) {
-      return res.status(403).json({
-        success: false,
-        message: "Role mismatch",
-      });
+      return res.status(403).json({ message: "Role mismatch" });
     }
 
-    // 4️⃣ Success
-    return res.json({
+    res.json({
       success: true,
-      token: "dummy-token", // later JWT
       user: {
         name: user.name,
         email: user.email,
-        role: user.role,
-      },
+        role: user.role
+      }
     });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
+  });
 });
 
 module.exports = router;

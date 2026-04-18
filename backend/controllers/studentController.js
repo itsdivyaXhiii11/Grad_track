@@ -38,6 +38,7 @@ exports.getStudents = (req, res) => {
 
   db.query(query, values, (err, results) => {
     if (err) {
+      console.error("DB ERROR:", err);  // 👈 ADD THIS
       return res.status(500).json({ error: err.message });
     }
     res.status(200).json(results);
