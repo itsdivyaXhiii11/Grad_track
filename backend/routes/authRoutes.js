@@ -1,47 +1,58 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const express = require("express");
+const router = express.Router();
+const User = require("../models/User");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
+// 🔐 LOGIN ROUTE
+router.post("/login", async (req, res) => {
+  const { email, password, role } = req.body;
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+  try {
+    // 1️⃣ Find user
+    const user = await User.findOne({ email });
 
-  password: {
-    type: String,
-    required: true,
-  },
-
-  role: {
-    type: String,
-    enum: ["student", "faculty", "admin"],
-    default: "student",
-  },
-}, { timestamps: true });
-
-
-// 🔐 HASH PASSWORD BEFORE SAVING
-userSchema.pre("save", async function () {
-    if (!this.isModified("password")) return;
-  
-    try {
-      this.password = await bcrypt.hash(this.password, 10);
-    } catch (err) {
-      throw err;
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
     }
-  });
 
+    // 2️⃣ Check password
+    const isMatch = await user.matchPassword(password);
 
-// 🔐 COMPARE PASSWORD (LOGIN)
-userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
 
+    // 3️⃣ Optional: check role
+    if (role && user.role !== role) {
+      return res.status(403).json({
+        success: false,
+        message: "Role mismatch",
+      });
+    }
 
-module.exports = mongoose.model("User", userSchema);
+    // 4️⃣ Success
+    return res.json({
+      success: true,
+      token: "dummy-token", // later JWT
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+module.exports = router;

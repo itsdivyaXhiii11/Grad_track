@@ -1,8 +1,16 @@
-/**
- * login.js — Handles login form submission and role-based redirect
- */
+import { apiCall } from "./api.js";
 
-document.addEventListener('DOMContentLoaded', () => {
+// 🔥 Load login.html dynamically
+fetch("/src/pages/login.html")
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById("app").innerHTML = html;
+
+    // ✅ After HTML loads → attach events
+    initLogin();
+  });
+
+function initLogin() {
   const form        = document.getElementById('loginForm');
   const alertBox    = document.getElementById('loginAlert');
   const btnText     = document.getElementById('loginBtnText');
@@ -10,24 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const togglePwd   = document.getElementById('togglePassword');
   const pwdField    = document.getElementById('loginPassword');
 
-  // --- Toggle password visibility ---
-  togglePwd.addEventListener('click', () => {
+  // 🔐 Toggle password
+  togglePwd?.addEventListener('click', () => {
     const isText = pwdField.type === 'text';
     pwdField.type = isText ? 'password' : 'text';
-    togglePwd.querySelector('i').className = isText
-      ? 'bi bi-eye text-muted'
-      : 'bi bi-eye-slash text-muted';
   });
 
-  // --- Form submit ---
-  form.addEventListener('submit', async (e) => {
+  // 🚀 Form submit
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    hideAlert();
-
-    if (!form.checkValidity()) {
-      form.classList.add('was-validated');
-      return;
-    }
 
     const email    = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -36,24 +35,24 @@ document.addEventListener('DOMContentLoaded', () => {
     setLoading(true);
 
     try {
-      const res = await apiCall('/auth/login', 'POST', { email, password, role });
+      const res = await apiCall('/auth/login', {
+        method: 'POST',
+        body: { email, password, role }
+      });
 
-      if (res.success) {
-        // ✅ Save session
-        saveSession(res.token, res.user);
+      console.log("API RESPONSE:", res);
 
+      if (res.ok && res.data?.success) {
+        saveSession(res.data.token, res.data.user);
         showAlert('Login successful! Redirecting…', 'success');
-
-        // ✅ Redirect after short delay
-        setTimeout(() => redirectByRole(res.user.role), 800);
-
+        setTimeout(() => redirectByRole(res.data.user.role), 800);
       } else {
-        showAlert(res.message || 'Login failed. Please try again.', 'danger');
+        showAlert(res.data?.message || 'Login failed', 'danger');
       }
 
     } catch (err) {
-      showAlert('An error occurred. Please try again.', 'danger');
       console.error(err);
+      showAlert('Server error', 'danger');
     } finally {
       setLoading(false);
     }
@@ -61,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Helpers ---
   function setLoading(loading) {
-    btnText.classList.toggle('d-none', loading);
-    btnSpinner.classList.toggle('d-none', !loading);
+    btnText?.classList.toggle('d-none', loading);
+    btnSpinner?.classList.toggle('d-none', !loading);
     form.querySelector('button[type=submit]').disabled = loading;
   }
 
@@ -71,32 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
     alertBox.className = `alert alert-${type}`;
   }
 
-  function hideAlert() {
-    alertBox.className = 'alert d-none';
-  }
-
-  // ✅ NEW: Save session
   function saveSession(token, user) {
     localStorage.setItem('token', token);
     localStorage.setItem('role', user.role);
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  // ✅ NEW: Role-based redirect
   function redirectByRole(role) {
     if (role === 'student') {
-      window.location.href = 'student-info.html';
+      window.location.href = '/src/pages/student-info.html';
     } 
     else if (role === 'faculty') {
-      window.location.href = 'faculty-dashboard.html';
-    } 
-    else if (role === 'admin' || role === 'coordinator') {
-      window.location.href = 'coordinator-dashboard.html';
+      window.location.href = '/src/pages/faculty-dashboard.html';
     } 
     else {
-      window.location.href = 'login.html';
+      window.location.href = '/src/pages/coordinator-dashboard.html';
     }
   }
-});
-
-
+}
