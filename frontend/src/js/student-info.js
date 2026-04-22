@@ -1,6 +1,3 @@
-// ================= IMPORT =================
-// import { apiCall } from "./api.js";
-
 // ================= DOM =================
 const batchSelect = document.getElementById("batch");
 const branchSelect = document.getElementById("branch");
@@ -14,9 +11,9 @@ const toast = document.getElementById("toast");
 
 // ================= BATCH AUTO =================
 window.addEventListener("DOMContentLoaded", () => {
-  const currentYear = new Date().getFullYear();
+  batchSelect.innerHTML = '<option value="">Select Batch</option>';
 
-  for (let i = 2016; i <= currentYear; i++) {
+  for (let i = 2016; i <= 2030; i++) {
     const opt = document.createElement("option");
     opt.value = `${i}-${i + 4}`;
     opt.textContent = `${i}-${i + 4}`;
@@ -27,23 +24,15 @@ window.addEventListener("DOMContentLoaded", () => {
 // ================= FETCH STUDENTS =================
 async function fetchStudents(batch, branch) {
   try {
-    const res = await fetch(`http://localhost:3001/api/students?batch=${batch}&branch=${branch}`);
+    const res = await fetch(
+      `http://localhost:3001/api/students?batch=${batch}&branch=${branch}`
+    );
 
-    if (!res.ok) throw new Error("Backend error");
+    if (!res.ok) throw new Error();
 
-    const data = await res.json();
-
-    if (!Array.isArray(data)) throw new Error("Not array");
-
-    return data;
-
-  } catch (err) {
-    console.warn("⚠️ Backend not ready → using MOCK DATA");
-
-    return [
-      { id: 1, name: "Divyanshi Singh", usn: "4XX22CS001" },
-      { id: 2, name: "Test Student", usn: "4XX22CS002" }
-    ];
+    return await res.json();
+  } catch {
+    return [];
   }
 }
 
@@ -52,43 +41,60 @@ async function loadStudents() {
   const batch = batchSelect.value;
   const branch = branchSelect.value;
 
-  nameSelect.innerHTML = '<option value="">Select Name</option>';
+  nameSelect.innerHTML = '<option value="">Select Student</option>';
   usnInput.value = "";
 
   if (!batch || !branch) return;
 
   const students = await fetchStudents(batch, branch);
 
-  students.forEach(s => {
+  students.forEach((s) => {
     const opt = document.createElement("option");
-    opt.value = s.name;
+    opt.value = s.id;
     opt.textContent = s.name;
     opt.dataset.usn = s.usn;
     nameSelect.appendChild(opt);
   });
 }
 
-// Events
-batchSelect.addEventListener("change", loadStudents);
+// ================= BATCH CHANGE =================
+batchSelect.addEventListener("change", () => {
+  const batch = batchSelect.value;
+  if (!batch) return;
+
+  const startYear = parseInt(batch.split("-")[0]);
+
+  branchSelect.querySelectorAll("option").forEach((opt) => {
+    if (opt.value === "AIML" || opt.value === "AIDS") {
+      opt.disabled = startYear < 2020;
+    }
+  });
+
+  if (
+    startYear < 2020 &&
+    (branchSelect.value === "AIML" || branchSelect.value === "AIDS")
+  ) {
+    branchSelect.value = "";
+  }
+
+  loadStudents();
+});
+
+// ================= BRANCH CHANGE =================
 branchSelect.addEventListener("change", loadStudents);
 
-// ================= NAME → USN (🔥 UPDATED LOGIC) =================
+// ================= NAME → USN =================
 nameSelect.addEventListener("change", () => {
   const selected = nameSelect.options[nameSelect.selectedIndex];
-  const originalUSN = selected?.dataset?.usn || "";
+  const usn = selected?.dataset?.usn || "";
+
+  if (!usn) return;
 
   const batch = batchSelect.value;
   const branch = branchSelect.value;
 
-  if (!batch || !branch || !originalUSN) {
-    usnInput.value = "";
-    return;
-  }
+  const year = batch.split("-")[0].slice(-2);
 
-  // 🔹 Extract year (2018 → 18)
-  const startYear = batch.split("-")[0].slice(-2);
-
-  // 🔹 Branch mapping
   const branchMap = {
     CSE: "CS",
     ISE: "IS",
@@ -98,18 +104,12 @@ nameSelect.addEventListener("change", () => {
     EEE: "EE"
   };
 
-  const branchCode = branchMap[branch] || branch;
+  const code = branchMap[branch] || branch;
 
-  // 🔹 Last 3 digits from original USN
-  const lastDigits = originalUSN.slice(-3);
-
-  // 🔹 Final USN
-  const newUSN = `4GW${startYear}${branchCode}${lastDigits}`;
-
-  usnInput.value = newUSN;
+  usnInput.value = `4GW${year}${code}${usn.slice(-3)}`;
 });
 
-// ================= PHONE VALIDATION =================
+// ================= PHONE =================
 phoneInput.addEventListener("input", function () {
   this.value = this.value.replace(/\D/g, "");
 });
@@ -118,10 +118,8 @@ phoneInput.addEventListener("input", function () {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const purpose = purposeSelect.value;
-
   const data = {
-    name: nameSelect.value,
+    name: nameSelect.options[nameSelect.selectedIndex]?.textContent,
     usn: usnInput.value,
     branch: branchSelect.value,
     batch_year: batchSelect.value,
@@ -130,38 +128,30 @@ form.addEventListener("submit", async (e) => {
     password: "1234"
   };
 
-  console.log("🚀 Sending:", data);
-
   try {
     const res = await fetch("http://localhost:3001/api/students", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
 
-    if (!res.ok) throw new Error("Failed to save");
+    if (!res.ok) throw new Error();
 
     showToast();
 
     setTimeout(() => {
-      if (purpose === "lor") {
-        window.location.href = "lor-request.html";
-      } 
-      else if (purpose === "higher-studies") {
-        window.location.href = "higher-studies-portal.html";
-      } 
-      else if (purpose === "status") {
-        window.location.href = "status-update.html";
-      }
+      const purpose = purposeSelect.value;
+
+      if (purpose === "lor") window.location.href = "lor-request.html";
+      if (purpose === "higher-studies") window.location.href = "higher-studies-portal.html";
+      if (purpose === "status") window.location.href = "status-update.html";
     }, 1500);
 
-  } catch (err) {
-    console.error(err);
-    alert("❌ Failed to save");
+  } catch {
+    alert("❌ Failed");
   }
 });
+
 // ================= TOAST =================
 function showToast() {
   toast.classList.add("show");

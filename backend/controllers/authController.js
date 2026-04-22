@@ -1,45 +1,57 @@
-const User = require("../models/User");
+const db = require("../db");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
-// REGISTER
-exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = new User({
-    name,
-    email,
-    password: hashedPassword
-  });
-
-  await user.save();
-
-  res.json({ message: "User registered successfully" });
-};
-
-// LOGIN
-exports.login = async (req, res) => {
+// ================= LOGIN =================
+exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const query = "SELECT * FROM students WHERE email = ?";
 
-  if (!user) {
-    return res.status(400).json({ message: "User not found" });
-  }
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error("DB ERROR:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
 
-  const validPassword = await bcrypt.compare(password, user.password);
+    // ❌ User not found
+    if (results.length === 0) {
+      return res.status(400).json({ message: "User not found" });
+    }
 
-  if (!validPassword) {
-    return res.status(400).json({ message: "Invalid password" });
-  }
+    const user = results[0];
 
-  const token = jwt.sign(
-    { id: user._id, role: user.role },
-    "secretkey",
-    { expiresIn: "1d" }
-  );
+    let isMatch = false;
 
-  res.json({ token });
+    try {
+      // 🔥 Try bcrypt (future safe)
+      isMatch = await bcrypt.compare(password, user.password);
+    } catch (e) {
+      isMatch = false;
+    }
+
+    // 🔥 Fallback for plain passwords (your current DB)
+    if (!isMatch) {
+      if (password === user.password) {
+        isMatch = true;
+      }
+    }
+
+    // ❌ Wrong password
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    // ✅ Success
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        usn: user.usn,
+        branch: user.branch,
+        batch: user.batch_year
+      }
+    });
+  });
 };
