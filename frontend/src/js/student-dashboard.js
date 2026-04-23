@@ -190,7 +190,8 @@ function formatDate(dateStr) {
 }
 
 // Temporary placeholder until LOR stats API is ready
-document.getElementById("statTotal").innerText = "—";
+/*document.getElementById("statTotal").innerText = "—";
 document.getElementById("statApproved").innerText = "—";
 document.getElementById("statPending").innerText = "—";
-document.getElementById("statRejected").innerText = "—";
+document.getElementById("statRejected").innerText = "—";*/
+window.requireAuth = requireAuth;

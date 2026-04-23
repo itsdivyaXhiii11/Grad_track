@@ -7,7 +7,7 @@
 const BASE_URL = "http://localhost:3001/api"; // ✅ FIXED PORT
 const USE_MOCK = false; // ⚠️ change to true if something breaks
 
-export async function apiCall(endpoint, options = {}) {
+async function apiCall(endpoint, options = {}) {
   const { method = "GET", headers = {}, body } = options;
 
   // 🟡 MOCK MODE (SAFE FALLBACK)
@@ -84,7 +84,7 @@ export async function apiCall(endpoint, options = {}) {
 
 /* ---------------- Layout Loader (KEEP SAME) ---------------- */
 
-export async function loadLayoutComponents() {
+async function loadLayoutComponents() {
   await Promise.all([
     injectHtml("#navbarSlot", "../components/navbar.html"),
     injectHtml("#sidebarSlot", "../components/sidebar.html"),
@@ -120,3 +120,4 @@ async function injectHtml(selector, path) {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+window.apiCall = apiCall;

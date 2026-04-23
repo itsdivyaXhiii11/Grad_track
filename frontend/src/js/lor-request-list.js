@@ -8,23 +8,54 @@ let lorAllRequests = [];
 let lorCurrentModal = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const user = requireAuth();
-  if (!user) return;
-  await injectComponents('My LOR Requests');
+  //const user = requireAuth();
+  //if (!user) return;
+  //await injectComponents('My LOR Requests');
+  console.log("LOR LIST JS RUNNING");
+  await loadAllLorRequests();
+  setupLorFilters();
   await loadAllLorRequests();
   setupLorFilters();
 });
 
+function formatDate(date) {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 async function loadAllLorRequests() {
   const tbody = document.getElementById('requestsBody');
+
   try {
-    const res = await apiCall('/lor/requests', 'GET');
-    if (!res.success) throw new Error(res.message);
-    lorAllRequests = res.data;
+    const res = await apiCall('/lor/requests', { method: "GET" });
+
+    console.log("API RESPONSE:", res); // debug
+
+    if (!res.ok || !res.data.success) {
+      throw new Error("Failed to fetch");
+    }
+
+    lorAllRequests = res.data.data;
+
     renderLorTable(lorAllRequests);
+
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4">Failed to load requests.</td></tr>';
     console.error(err);
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center text-danger py-4">
+          Failed to load requests.
+        </td>
+      </tr>`;
   }
 }
 
@@ -47,7 +78,7 @@ function renderLorTable(data) {
           ? '<i class="bi bi-check-circle-fill text-success"></i>'
           : '<i class="bi bi-dash text-muted"></i>'}
       </td>
-      <td>${r.university || <span class="text-muted">—</span>}</td>
+      <td>${r.university || '—'}</td>
       <td>${formatDate(r.submittedAt)}</td>
       <td><span class="badge-status badge-${r.status}">${capitalize(r.status)}</span></td>
       <td>

@@ -1,12 +1,10 @@
-//const facultyInput1 = document.getElementById("lorFaculty1");
-//const facultyInput2 = document.getElementById("lorFaculty2");
+
 let facultyInput1;
 let facultyInput2;
 let facultyList1;
 let facultyList2;
 
 let facultyData = [];
-//document.addEventListener("DOMContentLoaded", () => {
 
   // ================================
   // ELEMENT REFERENCES
@@ -24,26 +22,6 @@ let facultyData = [];
   const btnSpinner = document.getElementById("lorBtnSpinner");
 
 
-  // ================================
-  // FETCH FACULTY LIST FROM BACKEND
-  // ================================
-/*  async function fetchFacultyList() {
-    try {
-      const response = await fetch("http://localhost:3001/api/faculty");
-
-      if (!response.ok) throw new Error("Failed to fetch faculty");
-
-      const facultyList = await response.json();
-
-      populateDropdown(faculty1Select, facultyList);
-      populateDropdown(faculty2Select, facultyList);
-
-    } catch (error) {
-      console.error(error);
-      showAlert("danger", "Unable to load faculty list. Try again later.");
-    }
-  } 
-*/
   //to fetch
 async function loadFaculty() {
   try {
@@ -98,21 +76,6 @@ function filterFaculty() {
 }
 
 
-/*  function populateDropdown(selectElement, facultyList) {
-    selectElement.innerHTML = `<option value="">Select Faculty</option>`;
-
-    facultyList.forEach(faculty => {
-      const option = document.createElement("option");
-
-      // Store ID (recommended for backend)
-      option.value = faculty.id;
-      option.textContent = faculty.name;
-
-      selectElement.appendChild(option);
-    });
-  }
-
-*/
   // ================================
   // VALIDATION
   // ================================
@@ -129,9 +92,7 @@ function filterFaculty() {
       !university ||
       !country ||
       !course ||
-      !timeline ||
-      !file1Input.files.length ||
-      !file2Input.files.length
+      !timeline
     ) {
       showAlert("warning", "Please fill all required fields.");
       return false;
@@ -142,20 +103,6 @@ function filterFaculty() {
       showAlert("warning", "Please select two different faculties.");
       return false;
     }
-
-    // File validation
-    const validTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ];
-
-    if (!validTypes.includes(file1Input.files[0].type) ||
-        !validTypes.includes(file2Input.files[0].type)) {
-      showAlert("warning", "Only PDF, DOC, DOCX files are allowed.");
-      return false;
-    }
-
     return true;
   }
 
@@ -173,24 +120,40 @@ function filterFaculty() {
     btnSpinner.classList.remove("d-none");
     submitBtn.disabled = true;
 
-    const formData = new FormData();
+    // Get faculty IDs from selected names
+    const faculty1 = facultyData.find(f => f.name === faculty1Select.value);
+    const faculty2 = facultyData.find(f => f.name === faculty2Select.value);
+    
+    const faculty1_id = faculty1?.id;
+    const faculty2_id = faculty2?.id;
 
-    formData.append("faculty1", faculty1Select.value);
-    formData.append("faculty2", faculty2Select.value);
-    formData.append("university", document.getElementById("university").value.trim());
-    formData.append("country", document.getElementById("country").value.trim());
-    formData.append("course", document.getElementById("course").value.trim());
-    formData.append("timeline", document.getElementById("timeline").value);
+    if (!faculty1_id || !faculty2_id) {
+  showAlert("warning", "Please select valid faculty from the list.");
+  return;
+}
+    
+    // TEMP student ID (replace later)
+    const student_id = 1;
 
-    // Files
-    formData.append("lorFile", file1Input.files[0]);
-    formData.append("proofFile", file2Input.files[0]);
+// Prepare JSON data
+const requestData = {
+  student_id,
+  faculty1_id,
+  faculty2_id,
+  university: document.getElementById("university").value.trim(),
+  country: document.getElementById("country").value.trim(),
+  course: document.getElementById("course").value.trim()
+};
+
 
     try {
-      const response = await fetch("/api/lor-request", {
-        method: "POST",
-        body: formData
-      });
+      const response = await fetch("http://localhost:3001/api/lor", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(requestData)
+});
 
       if (!response.ok) throw new Error("Submission failed");
 
@@ -227,9 +190,7 @@ function filterFaculty() {
   // ================================
   // INIT
   // ================================
-  //fetchFacultyList();
 
-//});
 
 document.addEventListener("DOMContentLoaded", () => {
 
