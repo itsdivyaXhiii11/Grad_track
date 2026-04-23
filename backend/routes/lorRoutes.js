@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-
+//const { getAllLOR, createLOR } = require("../controllers/lorController");
 const lorController = require("../controllers/lorController");
 
-console.log(lorController);  
-
-router.post("/lor-request", lorController.createLOR);
+router.post("/", lorController.createLOR);
+router.get("/requests", lorController.getAllLOR); // 👈 THIS MUST EXIST
 
 module.exports = router;

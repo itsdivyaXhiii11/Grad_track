@@ -1,5 +1,8 @@
-const express = require("express");
+<<<<<<< HEAD
+=======
 const cors = require("cors");
+>>>>>>> f3f1184 (LOR dashboard + API fixes + frontend integration)
+const express = require("express");
 const dotenv = require("dotenv");
 
 // Load env variables
@@ -10,20 +13,19 @@ const db = require("./db");
 
 // Routes
 const facultyRoutes = require("./routes/facultyRoutes");
-const lorRoutes = require("./routes/lorRoutes");
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+const lorRoutes = require("./routes/lorRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-// ================= MIDDLEWARE =================
-app.use(express.json());
 
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }));
+
+app.use(express.json());
 
 // ================= ROUTES =================
 
